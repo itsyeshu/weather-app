@@ -1,4 +1,4 @@
-# weather-app
+# Weather web-app
 Get live weather updates for your city & locality
 
 ### Things you can do
