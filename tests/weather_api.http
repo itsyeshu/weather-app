@@ -1,0 +1,77 @@
+http://api.openweathermap.org/data/2.5/forecast
+    ?id=1275339
+    &lang=en
+    &appid=19ebb06ba467a9ab68825dd8f2d5af10
+
+###
+
+http://api.openweathermap.org/data/2.5/weather
+    ?zip=431601,in
+    &limit=1
+    &appid=19ebb06ba467a9ab68825dd8f2d5af10
+    # &appid=0a79f1c8132aac82c5c086a570df5224
+
+###
+
+http://api.openweathermap.org/data/2.5/weather
+    ?q=hillgate nanded
+    &limit=1
+    &appid=19ebb06ba467a9ab68825dd8f2d5af10
+    # &appid=0a79f1c8132aac82c5c086a570df5224
+
+###
+
+http://api.openweathermap.org/geo/1.0/reverse
+    ?lat=19.17
+    &lon=77.32
+    &limit=10
+    &appid=19ebb06ba467a9ab68825dd8f2d5af10
+    # &appid=0a79f1c8132aac82c5c086a570df5224
+
+###
+
+http://api.openweathermap.org/data/2.5/weather
+    ?lat=19.1383
+    &lon=77.3210
+    &limit=3
+    &appid=19ebb06ba467a9ab68825dd8f2d5af10
+    # &appid=0a79f1c8132aac82c5c086a570df5224
+
+###
+
+https://api.weather.com/v2/maps/dynamic
+    ?geocode=19.15,77.30
+    &h=320
+    &w=568
+    &lod=11
+    &map=light
+    &format=jpg
+    &language=hi
+    &apiKey=21d8a80b3d6b444998a80b3d6b1449d3
+    &a=1
+    &region=ÖPNVKarte
+
+###
+
+https://api.weather.com/v2/maps/dynamic
+    ?geocode=19.15,77.30
+    &h=320
+    &w=568
+    &lod=9
+    # &product=twcRadarHcMosaic
+    &product=satellite-V9
+    &map=light
+    &format=jpg
+    &language=en-IN
+    &apiKey=21d8a80b3d6b444998a80b3d6b1449d3
+    &a=0
+    &region=in
+
+###
+
+https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/geojson(%7B%22type%22%3A%22FeatureCollection%22%2C%22features%22%3A%5B%7B%22type%22%3A%22Feature%22%2C%22properties%22%3A%7B%22marker-color%22%3A%22%23462eff%22%2C%22marker-size%22%3A%22medium%22%2C%22marker-symbol%22%3A%22bus%22%7D%2C%22geometry%22%3A%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-122.25993633270264,37.80988566878777%5D%7D%7D%2C%7B%22type%22%3A%22Feature%22%2C%22properties%22%3A%7B%22marker-color%22%3A%22%23e99401%22%2C%22marker-size%22%3A%22medium%22%2C%22marker-symbol%22%3A%22park%22%7D%2C%22geometry%22%3A%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-122.25916385650635,37.80629162635318%5D%7D%7D%2C%7B%22type%22%3A%22Feature%22%2C%22properties%22%3A%7B%22marker-color%22%3A%22%23d505ff%22%2C%22marker-size%22%3A%22medium%22%2C%22marker-symbol%22%3A%22music%22%7D%2C%22geometry%22%3A%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-122.25650310516359,37.8063933469406%5D%7D%7D%5D%7D)/-122.256654,37.804077,13/500x300?access_token=pk.eyJ1IjoiZXhhbXBsZXMiLCJhIjoiY2p0MG01MXRqMW45cjQzb2R6b2ptc3J4MSJ9.zA2W0IkI0c6KaAhJfk9bWg
+
+
+
+###
+https://api.open-meteo.com/v1/forecast?latitude=19.16&longitude=77.31&daily=weathercode,temperature_2m_max&timeformat=unixtime&timezone=auto&past_days=1
