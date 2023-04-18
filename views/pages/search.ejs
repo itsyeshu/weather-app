@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', {
+            title : "Live weather & forecast",
+            favicon : "/public/img/favicon.png",
+            og_img : "/public/img/favicon.png",
+            desc : "Weather app gives you the most accurate weather info that makes it worth visiting."
+    }); %>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+</head>
+<body class="container">
+    <%- include('../partials/header', {
+        show_back_button: false,
+    }); %>
+    <main id="app">
+        <div id="container" class="flex">
+            <div id="background">
+                <div class="bg-img-cont"></div>
+            </div>
+            <div id="content">
+                <h1>Search</h1>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

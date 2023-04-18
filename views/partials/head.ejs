@@ -3,6 +3,12 @@
 <title><%= title %></title>
 <meta name="description" content="<%= desc %>">
 <link rel="shortcut icon" href="<%= favicon %>" type="image/png">
+<link rel="apple-touch-icon" href="<%= favicon %>">
+
+<meta property="og:title" content="<%= title %>">
+<meta property="og:description" content="<%= desc %>">
+<meta property="og:image" content="<%= og_img %>">
+
 <meta name="theme-color" content="#455a64">
 
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Righteous&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
@@ -16,7 +22,7 @@
         --background-color : #263238;
         --on-background-color : #344045;
         --background-image-color : #72a1b8;
-        --background-image-color : #7b97a5;
+        /* --background-image-color : #7b97a5; */
         --on-background-border-color : #6e6e6e;
         --box-background : rgba(255,255,255,0.12);
 
@@ -26,6 +32,9 @@
         --border-radius-large : 8px;
         --border-radius-xlarge : 10px;
         --signature-border-radius : 8px;
+
+        --header-height : 64px;
+        --max-width : 1000px;
 
         --box-spacing : 12px;
     }
@@ -48,6 +57,8 @@
     }
     html{
         background: var(--background-color, #263238);
+        cursor: default;
+        user-select: none;
     }
     p{margin: var(--box-spacing, 12px) 0;}
     .text_align_rt{text-align: right;}
@@ -97,7 +108,7 @@
         height:auto;
         /* align-items: center;
         justify-content: center; */
-        padding:194px 0 0 0;
+        padding:var(--header-height, 64px) 0 0 0;
         position: relative;
     }
 
@@ -111,25 +122,28 @@
     }
     .bg-img-cont{
         width:100%;
-        height:180px;
+        height:var(--header-height, 64px);
         overflow:hidden;
         position: relative;
+        background: #455a64;
     }
-    .bg-img-cont::after{
+    /* .bg-img-cont::after{
         content: "";
         position: absolute;
         display: block;
         width:100%;height:100%;
         top:0;left:0;right:0;bottom:0;
-        background:radial-gradient(ellipse at center -300px, transparent , var(--background-color, #263238));
+        opacity:0.6;
         z-index: 1;
     }
 
     .lazy-bg-img{
-        display: block;
+        display: none;
         width:100%;
+        height:100%;
+        object-fit: cover;
         min-width: 500px;
-    }
+    } */
 
     .flex {
         display: -ms-flex;
@@ -140,9 +154,9 @@
 
     #content {
         width: 90%;
-        max-width: 1000px;
+        max-width: var(--max-width, 1000px);
         height: auto;
-        margin: 10px auto 5% auto;
+        margin: 20px auto 46px auto;
         display: -ms-flex;
         display: -moz-flex;
         display: flex;
@@ -152,7 +166,7 @@
     #city_weather {
         width: 40%;
         height: auto;
-        min-width: 320px;
+        max-width: 500px;
     }
 
     #weather_forecast {
@@ -169,10 +183,9 @@
     }
 
     .box.invert {
-        /* background: var(--primary-background, #eceff1); */
-        /* color:#455a64; */
         background: transparent;
-        box-shadow: inset 0 0 0 1px var(--on-background-border-color, #6e6e6e);
+        border: solid 1px var(--on-background-border-color, #6e6e6e);
+        overflow:visible;
     }
 
     .box+.box {
@@ -190,10 +203,6 @@
     .box_container.light {
         background: var(--box-background, rgba(255, 255, 255, 0.1));
     }
-    
-    /* .box.invert .box_container.light {
-        background: rgba(189, 213, 243, 0.67);
-    } */
 
     .box_content {
         width: 100%;
@@ -236,7 +245,7 @@
     hr.hr, hr.hr_90 {
         width:100%;
         border: none;
-        border-top: solid 1px #fff2;
+        border-top: solid 1px var(--on-background-border-color, #6e6e6e);
         margin: 0 auto;
     }
     hr.hr{
@@ -336,17 +345,19 @@
         color:#2e2e2e;
         cursor: pointer;
     }
-
     .country_code{
-        vertical-align: baseline;
         line-height: 16px;
         font-size: 12px;
         margin: 0 0 0 4px;
+        vertical-align: middle;
     }
     .country_code img{
         display: inline-block;
         height: 16px;
         width: 16px;
+        vertical-align: baseline;
+    }
+    .city_name_box .country_code{
         vertical-align: baseline;
     }
 
@@ -360,25 +371,45 @@
         flex-grow: 0;
         flex-shrink: 0;
         white-space: nowrap;
-        border-radius: var(--border-radius-small, 4px);
-        background: var(--box-background, rgba(255,255,255,0.1));
+        border-radius: 24px;
         font-size: 13.4px;
-        line-height: 20px;
-        padding: 4px 15px;
+        line-height: 24px;
+        padding: 2px 8px;
+        min-width:12px;
+        text-align: center;
         border:solid 1px var(--on-background-border-color, #6e6e6e);
+    }
+    .tag[selected]{
+        border-color: #455a64;
+        background: #455a64;
+        /* border-radius: var(--border-radius-medium, 6px); */
     }
     .tag b{font-weight: 500;}
     .tag+.tag{
         margin-left:6px;
     }
+    .simpl_tag{
+        display: inline-block;
+        width:auto;
+        line-height: 16px;
+        padding:2px 6px;
+        border-radius: var(--border-radius-small, 4px);
+        background: #607d8b;
+        font-size: 12.3px;
+    }
 
-    @media screen and (max-width:600px) {
+    @media screen and (max-width:800px) {
         #content {
             flex-direction: column;
         }
 
         .box_border {
             margin: var(--box-spacing, 12px) 0 0;
+        }
+
+        #content{
+            width:calc(100% - 40px);
+            margin:20px 20px 36px 20px;
         }
 
         #city_weather,

@@ -1,0 +1,88 @@
+<style>
+    #header{
+        position: absolute;
+        top:0;
+        padding:0;
+        width:100%;
+        height: var(--header-height, 64px);
+        z-index: 2;
+    }
+    #header .header_cont{
+        position: relative;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        width:90%;
+        max-width: var(--max-width, 1000px);
+        margin:0 auto;
+    }
+    #logo{height:100%;}
+    #logo .logo_box{height:100%;align-items: center;}
+    #logo .logo_box+.logo_box{
+        margin-left:12px;
+    }
+    #logo .head_anchor{
+        width:auto;
+        flex-shrink: 0;
+        text-decoration: none;
+        color:inherit;
+    }
+    #logo h1{
+        font-size: 18px;
+        font-weight: 400;
+        margin:0;
+        padding:0;
+        line-height: 26px;
+        padding: 0 12px 0 0;
+    }
+    #logo img{
+        display: block;
+        height:54px;
+        width:auto;
+    }
+    .back_button{
+        padding: 10px 4px;
+        border-radius: 0;
+        border:none;
+        margin:0 -2px 0 -10px;
+    }
+    @media screen and (max-width: 800px) {
+        #header .header_cont{
+            width:calc(100% - 40px);
+            margin: 0 20px;
+        }
+
+    }
+</style>
+
+<header id="header">
+    <div class="header_cont flex">
+        <div id="logo" class="flex">
+            <div class="logo_box flex">
+                <% if (show_back_button) { %>
+                    <a class="simpl_btn btn_sq btn_opt back_button" href="<%= back_button_link %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 96 960 960" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M480 882.564 174.436 576.333 480 270.769l37.179 37.436-243.385 242.872h512.437v51.179H273.794l243.385 242.872L480 882.564Z"/></svg>
+                    </a>
+                <% } %>
+                <a href="/" class="head_anchor">
+                    <img src="/public/img/favicon.png" alt="Weather App">
+                </a>
+            </div>
+            <div class="logo_box flex">
+                <a href="/" class="head_anchor">
+                    <h1>
+                        <span style="display:block;font-size:12px;line-height: 16px;">Live weather</span>
+                        & Forecast
+                    </h1>
+                </a>
+            </div>
+        </div>
+        <div class="nav">
+            <div class="logo_box flex">
+                <a href="https://github.com/itsyeshu/weather-app/" target="_blank" rel="noopener" class="simpl_btn btn_sq btn_opt hvr" hvr="Git repo">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 92 92" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M90.156 41.965 50.036 1.848a5.913 5.913 0 0 0-8.368 0l-8.332 8.332 10.566 10.566a7.03 7.03 0 0 1 7.23 1.684 7.043 7.043 0 0 1 1.673 7.277l10.183 10.184a7.026 7.026 0 0 1 7.278 1.672 7.04 7.04 0 0 1 0 9.957 7.045 7.045 0 0 1-9.961 0 7.038 7.038 0 0 1-1.532-7.66l-9.5-9.497V59.36a7.04 7.04 0 0 1 1.86 11.29 7.04 7.04 0 0 1-9.957 0 7.04 7.04 0 0 1 0-9.958 7.034 7.034 0 0 1 2.308-1.539V33.926a7.001 7.001 0 0 1-2.308-1.535 7.049 7.049 0 0 1-1.516-7.7L29.242 14.273 1.734 41.777a5.918 5.918 0 0 0 0 8.371L41.855 90.27a5.92 5.92 0 0 0 8.368 0l39.933-39.934a5.925 5.925 0 0 0 0-8.371"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
