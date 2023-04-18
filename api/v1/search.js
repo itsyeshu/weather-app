@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const DEFAULT = require("./constants");
-const searchController = require(`${DEFAULT.DIR}/search`);
+const searchController = require(DEFAULT.DIR +"/search");
 
 router.get('/', async (req, res) => {
     const city_name = req.query.city || "";

@@ -1,11 +1,12 @@
 <style>
     #header{
-        position: absolute;
+        position: fixed;
         top:0;
         padding:0;
         width:100%;
         height: var(--header-height, 64px);
-        z-index: 2;
+        z-index: 2000;
+        color: var(--header-font-color, #fafafa);
     }
     #header .header_cont{
         position: relative;
@@ -43,8 +44,10 @@
     .back_button{
         padding: 10px 4px;
         border-radius: 0;
-        border:none;
-        margin:0 -2px 0 -10px;
+        border: none;
+        min-width: 34px;
+        max-width: 34px;
+        margin: 0 0 0 -10px;
     }
     @media screen and (max-width: 800px) {
         #header .header_cont{

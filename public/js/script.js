@@ -1,10 +1,12 @@
 "use-strict";
 var geocoder;
+const html = document.documentElement;
 const gps_button = document.getElementById("gps_button");
-const refresh_button = document.getElementById("refresh_button");
 const toggle_theme_button = document.getElementById("toggle_theme_button");
 const gps_info_dialog = document.getElementById("gps_info_dialog");
-gps_button.addEventListener("click", e => {
+var dark_theme;
+
+gps_button && gps_button.addEventListener("click", e => {
     const success_function = (e) => {
         try {
             const {latitude:lat, longitude:lon} = e.coords;
@@ -12,7 +14,7 @@ gps_button.addEventListener("click", e => {
         } catch (e) {
             console.log(e);
         }
-        // end_function(e);
+        end_function(e);
     }
     const error_function = (e) => {
         console.log(e);
@@ -21,16 +23,36 @@ gps_button.addEventListener("click", e => {
     const end_function = (e) => {
         gps_info_dialog.close();
     }
-    navigator.geolocation.getCurrentPosition(success_function, error_function);
+    // navigator.geolocation.getCurrentPosition(success_function, error_function);
     gps_info_dialog.showModal();
 });
 
-toggle_theme_button.addEventListener("click", e => {
-    gps_info_dialog.showModal();
-});
+function change_to_theme(theme) {
+    console.log(dark_theme, theme);
+    const DARK_THEME_COLOR = "#394d56";
+    const LIGHT_THEME_COLOR = "#327648";
 
-refresh_button.addEventListener("click", e => {
-    return location.reload();
+    const theme_color = theme?DARK_THEME_COLOR:LIGHT_THEME_COLOR;
+    document.querySelector("meta[name=theme-color]").setAttribute("content", theme_color);
+
+    theme?html.classList.add("theme-dark"):html.classList.remove("theme-dark");
+    toggle_theme_button.setAttribute("hvr", !theme?"Light theme":"Dark theme");
+    
+    const dark_theme_path = document.getElementById("path_dark_theme");
+    const light_theme_path = document.getElementById("path_light_theme");
+    const path_from = document.getElementById("path_theme");
+
+    const path_to = !theme?light_theme_path:dark_theme_path;
+    path_from.setAttribute("d", path_to.getAttribute("d"));
+
+    dark_theme = theme;
+
+    // localStorage.setItem("dark_theme", theme);
+}
+
+toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
+    dark_theme = !dark_theme;
+    change_to_theme(dark_theme);
 });
 
 const getAddr = (lat, lon) => {
@@ -67,7 +89,14 @@ const getAddr = (lat, lon) => {
 }
 
 function initialize() {
-    geocoder = new google.maps.Geocoder();
+    // geocoder = new google.maps.Geocoder();
+    // if(localStorage.getItem("dark_theme") && localStorage.getItem("dark_theme") === null) {
+        dark_theme = html.classList.contains("theme-dark");
+    // }else{
+    //     dark_theme = localStorage.getItem("dark_theme");
+    // }
+    // console.log("Initialize called!")
+    // change_to_theme(dark_theme);
 }
 
 window.addEventListener("DOMContentLoaded", initialize);

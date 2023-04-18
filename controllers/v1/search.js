@@ -22,6 +22,7 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
     // @return: Array of city objects
 
     const { data:city_data } = await axios.get(GET_CITY_ID_URI(clean_name(city_name), clean_limit(limit), clean_lang(lang)));
+    if(!city_data.results || city_data.results.length === 0) return {"data" : [], "count" : 0};
     const city_array = city_data.results.map(i=>{return {"id" : i.id,"lat" : Math.round(i.latitude * 1000) / 1000,"lon" : Math.round(i.longitude * 1000) / 1000,"city" : {"name" : i.name,"country_flag" : country2flag(i.country_code),"country_code" : i.country_code,"country" : i.country,"state" : i.admin1 || "(N.A.)",}}});
     return {
         "data"  : city_array,

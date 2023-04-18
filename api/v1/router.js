@@ -1,4 +1,5 @@
 const express = require("express");
+const DEFAULT = require("./constants");
 const router = express.Router();
 
 const apiRoutes = {
@@ -8,11 +9,13 @@ const apiRoutes = {
 }
 
 router.get('/', (req, res) => {
-    res.send("API endpoint");
+    res.send({
+        "message" : "Welcome to the API" + DEFAULT.API_VERSION,
+    });
 });
 
 router.use('/search', apiRoutes.search);
 router.use('/weather', apiRoutes.weather);
-router.use('/air_quality', apiRoutes.air_quality);
+router.use('/aqi', apiRoutes.air_quality);
 
 module.exports = router;
