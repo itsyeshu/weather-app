@@ -10,20 +10,120 @@
     }); %>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 </head>
-<body class="container">
+<body>
     <%- include('../partials/header', {
         show_back_button: false,
     }); %>
+    <link rel="stylesheet" href="/public/css/search.css">
     <main id="app">
-        <div id="container" class="flex">
+        <div id="container">
             <div id="background">
-                <div class="bg-img-cont"></div>
             </div>
             <div id="content">
-                <h1>Search</h1>
+                <section class="section center_section" id="home_section">
+                    <div class="max_width">
+                        <div class="content">
+                            <div class="img_cont" id="rotating_globe_img_cont">
+                                <img src="/public/img/globe/rotating_earth_globe.gif" alt="Rotating globe">
+                            </div>
+                            <div>
+                                <span class="tag">Free</span>
+                                <a href="/embed-iframe" target="_blank" class="tag special_link">Embed iframe <span class="svg-inline"><svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="currentColor"><path d="M220 903q-27.637 0-47.319-19.681Q153 863.638 153 836V316q0-27.638 19.681-47.319Q192.363 249 220 249h257v67H220v520h520V579h67v257q0 27.638-19.681 47.319T740 903H220Zm168.5-188L341 667.5 692.5 316H568v-67h239v239h-67V363.5L388.5 715Z"></path></svg></span></a>
+                                <a href="/api" target="_blank" class="tag special_link">API doc <span class="svg-inline"><svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="currentColor"><path d="M220 903q-27.637 0-47.319-19.681Q153 863.638 153 836V316q0-27.638 19.681-47.319Q192.363 249 220 249h257v67H220v520h520V579h67v257q0 27.638-19.681 47.319T740 903H220Zm168.5-188L341 667.5 692.5 316H568v-67h239v239h-67V363.5L388.5 715Z"></path></svg></span></a>
+                            </div>
+                            <h1 class="page_title" style="max-width: 500px;">
+                                Instant Live weather & forecast for any place on the planet
+                            </h1>
+                            <div id="search_form">
+                                <input name="city" type="text" id="search_input" placeholder="Search for a city" autocomplete="off">
+                                <div id="search_results">
+                                    <div id="search_results_cont"></div>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <button class="simpl_btn btn_sq btn_opt hvr" id="gps_button" hvr="GPS">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path></svg>
+                                </button>
+                                <button class="simpl_btn btn_sq btn_opt hvr" id="toggle_theme_button" hvr="Light theme">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path id="path_theme" xmlns="http://www.w3.org/2000/svg" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"></path></svg>
+                                </button>
+                                <a target="_blank" class="simpl_btn btn_sq btn_opt hvr" href="https://github.com/itsyeshu/weather-app/" target="_blank" hvr="Git repo">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 92 92" width="24px"><path xmlns="http://www.w3.org/2000/svg" d="M90.156 41.965 50.036 1.848a5.913 5.913 0 0 0-8.368 0l-8.332 8.332 10.566 10.566a7.03 7.03 0 0 1 7.23 1.684 7.043 7.043 0 0 1 1.673 7.277l10.183 10.184a7.026 7.026 0 0 1 7.278 1.672 7.04 7.04 0 0 1 0 9.957 7.045 7.045 0 0 1-9.961 0 7.038 7.038 0 0 1-1.532-7.66l-9.5-9.497V59.36a7.04 7.04 0 0 1 1.86 11.29 7.04 7.04 0 0 1-9.957 0 7.04 7.04 0 0 1 0-9.958 7.034 7.034 0 0 1 2.308-1.539V33.926a7.001 7.001 0 0 1-2.308-1.535 7.049 7.049 0 0 1-1.516-7.7L29.242 14.273 1.734 41.777a5.918 5.918 0 0 0 0 8.371L41.855 90.27a5.92 5.92 0 0 0 8.368 0l39.933-39.934a5.925 5.925 0 0 0 0-8.371"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 96 960 960" width="16px" fill="currentColor" style="padding:4px;"><path d="M220 903q-27.637 0-47.319-19.681Q153 863.638 153 836V316q0-27.638 19.681-47.319Q192.363 249 220 249h257v67H220v520h520V579h67v257q0 27.638-19.681 47.319T740 903H220Zm168.5-188L341 667.5 692.5 316H568v-67h239v239h-67V363.5L388.5 715Z"></path></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="section" id="suggestion_section" style="background:var(--box-background-color, #e3e3e3);overflow:hidden;">
+                    <div class="max_width">
+                        <div class="content">
+                            <div class="content_title">
+                                <h2 style="font-weight:600;margin:16px 0;">Suggestions</h2>
+                            </div>
+                            <div class="box invert" style="background:var(--background-color);width:320px;">
+                                <div class="box_container hvr">
+                                    <div class="city_box flex box_content">
+                                        <div class="city_name_box flex_grow">
+                                            <h2>
+                                                Nanded
+                                                <span class="country_code" title="Maharashtra, India"><img src="https://open-meteo.com/images/country-flags/in.svg" alt="IN"></span>
+                                            </h2>
+                                            <p class="simpl_p">19.1602, 77.315 • Maharashtra, IN</p>
+                                        </div>
+                                        <div class="clock" data-timezone="Asia/Kolkata">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="54" height="54">
+                                                <g class="clock_hand second_hand" style="transform: rotate(150deg);">
+                                                    <line x1="12" y1="11" x2="12" y2="1" stroke-width="0.4" stroke-linecap="round"></line>
+                                                    <line x1="12" y1="3" x2="12" y2="3" stroke-width="1.8" stroke-linecap="round"></line>
+                                                </g>
+                                                <g class="clock_hand minute_hand" style="transform: rotate(480deg);">
+                                                    <line x1="12" y1="11" x2="12" y2="4" stroke-width="0.8" stroke-linecap="round"></line>
+                                                    <line x1="12" y1="8" x2="12" y2="2" stroke-width="1.8" stroke-linecap="round"></line>
+                                                </g>
+                                                <g class="clock_hand hour_hand" style="transform: rotate(90deg);">
+                                                    <line x1="12" y1="11" x2="12" y2="6" stroke-width="0.8" stroke-linecap="round"></line>
+                                                    <line x1="12" y1="8" x2="12" y2="4" stroke-width="1.8" stroke-linecap="round"></line>
+                                                    <circle cx="12" cy="12" r="1" fill="transparent" stroke-width="0.8"></circle>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="box_container">
+                                    <div class="box_content" style="margin:calc(-0.5 * var(--signature-spacing, 12px)) 0 var(--signature-spacing, 12px) 0;">
+                                        <span class="tab ">
+                                            Hometown
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="box_container">
+                                    <div class="box_content flex" style="margin: calc(-0.5 * var(--signature-spacing, 12px)) 0 calc(0.5 * var(--signature-spacing, 12px)) 0;"><span style="width:auto;white-space: nowrap;margin-right: calc(0.5 * var(--signature-spacing, 12px));font-size: 11px;">Results for nanded</span><hr class="hr"></div>
+                                </div>
+                                <div class="box_container" style="overflow:hidden;border-radius: 0 0 var(--border-radius-for-box, 12px) var(--border-radius-for-box, 12px);">
+                                    <div class="wide_block scroll-y flex">
+                                        <a href="/search/?city=nanded&amp;counter=2" class="tag special_link">
+                                            <b>
+                                                Nānded
+                                                <span class="country_code" title="Maharashtra, India"><img src="https://open-meteo.com/images/country-flags/in.svg" alt="IN"></span>
+                                            </b>
+                                        </a>
+                                        <a href="/search/?city=nanded&amp;counter=3" class="tag special_link">
+                                            <b>
+                                                Nānded
+                                                <span class="country_code" title="Maharashtra, India"><img src="https://open-meteo.com/images/country-flags/in.svg" alt="IN"></span>
+                                            </b>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </main>
     <script type="text/javascript" src="/public/js/script.js"></script>
+    <script type="text/javascript" src="/public/js/search_script.js"></script>
 </body>
 </html>

@@ -61,8 +61,17 @@ const fetchCurrentAirQuality = async (lat, lon, start_date, end_date, timezone=D
     //
     // @return: Object of air quality data
 
-    const { data:air_quality_data } = await axios.get(GET_CURRENT_AIR_QUALITY_URI(lat, lon, start_date, end_date, timezone, lang));
-
+    try{
+        var { data:air_quality_data } = await axios.get(GET_CURRENT_AIR_QUALITY_URI(lat, lon, start_date, end_date, timezone, lang));
+    }catch(err){
+        return {
+            "status" : "failed",
+            "statusCode" : 500,
+            "message" : "Error while fetching air quality data",
+            "error" : err.message,
+            "data" : {}
+        }
+    }
     const data = {
         "lat" : air_quality_data.latitude,
         "lon" : air_quality_data.longitude,
@@ -91,11 +100,26 @@ const fetchCurrentAirQuality = async (lat, lon, start_date, end_date, timezone=D
             "ozone" : air_quality_data.hourly.ozone
         }
     }
-    return data;
+    return {
+        "status" : "success",
+        "statusCode" : 200,
+        "data" : data
+    };
 }
 
 const fetchCurrentAirQualityIndex = async (lat, lon, date, timezone=DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
-    const air_quality_data = await fetchCurrentAirQuality(lat, lon, addDays(date, -1), date, timezone, lang);
+    const data = await fetchCurrentAirQuality(lat, lon, addDays(date, -1), date, timezone, lang);
+
+    if(data.error)
+        return {
+            "status" : "failed",
+            "statusCode" : data.statusCode,
+            "error" : data.error,
+            "message" : data.message,
+            "data" : data.data 
+        }
+
+    const air_quality_data = data.data;
 
     const current_hour = new Date(new Date(air_quality_data.start_date).toLocaleString('en-US', { timeZone: air_quality_data.timezone.timezone })).getHours();
 
@@ -108,21 +132,25 @@ const fetchCurrentAirQualityIndex = async (lat, lon, date, timezone=DEFAULT.DEFA
         calculateAQI("ozone" , avgOfArray(air_quality_data.data.ozone.slice(current_hour, 7+current_hour)))];
 
     return {
-        "lat" : air_quality_data.lat,
-        "lon" : air_quality_data.lon,
-        "start_date" : air_quality_data.start_date,
-        "end_date" : air_quality_data.end_date,
-        "timezone" : air_quality_data.timezone,
-        "standard" : "National AQI, CPCB India",
+        "status" : "success",
+        "statusCode" : 200,
         "data" : {
-            "aqi" : Math.max(...air_quality_indices),
-            "aqi_safety" : calculateAQISatefy(Math.max(...air_quality_indices)),
-            "pm10" : air_quality_indices[0],
-            "pm2_5" : air_quality_indices[1],
-            "carbon_monoxide" : air_quality_indices[2],
-            "nitrogen_dioxide" : air_quality_indices[3],
-            "sulphur_dioxide" : air_quality_indices[4],
-            "ozone" : air_quality_indices[5]
+            "lat" : air_quality_data.lat,
+            "lon" : air_quality_data.lon,
+            "start_date" : air_quality_data.start_date,
+            "end_date" : air_quality_data.end_date,
+            "timezone" : air_quality_data.timezone,
+            "standard" : "National AQI, CPCB India",
+            "data" : {
+                "aqi" : Math.max(...air_quality_indices),
+                "aqi_safety" : calculateAQISatefy(Math.max(...air_quality_indices)),
+                "pm10" : air_quality_indices[0],
+                "pm2_5" : air_quality_indices[1],
+                "carbon_monoxide" : air_quality_indices[2],
+                "nitrogen_dioxide" : air_quality_indices[3],
+                "sulphur_dioxide" : air_quality_indices[4],
+                "ozone" : air_quality_indices[5]
+            }
         }
     }
 }

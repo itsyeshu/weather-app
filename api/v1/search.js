@@ -7,8 +7,14 @@ const searchController = require(DEFAULT.DIR +"/search");
 router.get('/', async (req, res) => {
     const city_name = req.query.city || "";
     if(city_name === ""){
-        return res.status(400).send({
-            "status": 400,
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": 400,
+            "query": {
+                "city": city_name,
+                "lang": req.query.lang || DEFAULT.DEFAULT_LANG,
+                "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
+            },
             "error": "Bad Request",
             "message": "City name is required"
         });
@@ -16,31 +22,54 @@ router.get('/', async (req, res) => {
     const lang = req.query.lang;
     const limit = parseInt(req.query.limit) || DEFAULT.DEFAULT_CITY_LIMIT;
     if (isNaN(limit) || limit < 1){
-        return res.status(400).send({
-            "status": 400,
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": 400,
+            "query": {
+                "city": city_name,
+                "lang": req.query.lang || DEFAULT.DEFAULT_LANG,
+                "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
+            },
             "error": "Bad Request",
             "message": "Limit must be a positive integer"
         });
     }
     try{
-        const {data : city_array, count} = await searchController.fetchCitiesFromName(city_name, limit, lang);
-        if(count <= 0){
-            console.log(`City with name "${city_name}" does not exist`);
-            res.status(404).send({
-                "status": 404,
-                "error": "City not found",
-                "message": `City with name "${city_name}" does not exist`
-            })
+        const {data, count} = await searchController.fetchCitiesFromName(city_name, limit, lang);
+        if(data.error){
+            return res.status(200).send({
+                "status": "failed",
+                "statusCode": data.statusCode,
+                "query": {
+                    "city": city_name,
+                    "lang": req.query.lang || DEFAULT.DEFAULT_LANG,
+                    "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
+                },
+                "error": data.error,
+                "message": data.message
+            });
         }
-        res.status(200).send({
-            "status": 200,
+        return res.status(200).send({
+            "status": "success",
+            "statusCode": 200,
+            "query": {
+                "city": city_name,
+                "lang": req.query.lang || DEFAULT.DEFAULT_LANG,
+                "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
+            },
             "message": "Success",
-            "data": city_array
+            "data": data
         });
     }catch(err) {
         console.log(err);
-        res.status(500).send({
-            "status": 500,
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": 500,
+            "query": {
+                "city": city_name,
+                "lang": req.query.lang || DEFAULT.DEFAULT_LANG,
+                "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
+            },
             "error": "Internal Server Error",
             "message": `${err.message}`
         })

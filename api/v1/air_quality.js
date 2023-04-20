@@ -17,7 +17,7 @@ router.get('/city', async (req, res) => {
     //
     // @return: Air quality index of the city
 
-    const city_name = req.query.city || "";
+    const city_name = req.query.city || undefined;
     let counter = parseInt(req.query.counter);
     console.log(req.query.counter);
     if(req.query.counter === undefined || req.query.counter === "") counter = 1;
@@ -27,53 +27,61 @@ router.get('/city', async (req, res) => {
     const timezone = req.query.timezone || DEFAULT.DEFAULT_TIME_ZONE;
     const lang = req.query.lang || DEFAULT.DEFAULT_LANG;
 
-
     if(city_name === "" || city_name === undefined){
-        return res.status(400).send({
-            "status": 400,
+        return res.status(200).send({
+            "status": "success",
+            "statusCode": 400,
             "error": "Bad Request",
-            "message": "City name is required"
+            "message": "City name is required",
+            "data" : {}
         });
     }
     if (isNaN(counter) || counter <= 0){
         return res.status(400).send({
-            "status": 400,
+            "status": "success",
+            "statusCode": 400,
             "error": "Bad Request",
             "message": "Counter must be a positive integer"
         });
     }
-    try{
-        const {data : city_array, count} = await searchController.fetchCitiesFromName(city_name, limit, lang);
-        if(count <= 0){
-            res.status(404).send({
-                "status": 404,
-                "error": "City not found",
-                "message": `City with name "${city_name}" does not exist`
-            })
-        }
-        if(counter > count){
-            res.status(206).send({
-                "status": 206,
-                "error": "City not found",
-                "message": `City with name "${city_name}" does not exist at index ${counter}. Try a number between 1 and ${count}.`
-            })
-        }
-        const city = city_array[counter-1];
-        const air_quality = await aqiController.fetchCurrentAirQualityIndex(city.lat, city.lon, start_date, end_date, timezone, lang);
-        res.status(200).send({
-            "status": 200,
-            "message": "Success",
-            "city": city,
-            "data": air_quality,
+    const _cities_data = await searchController.fetchCitiesFromName(city_name, limit, lang);
+    if(_cities_data.error){
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": _cities_data.statusCode,
+            "error": _cities_data.error,
+            "message": _cities_data.message,
+            "data" : _cities_data.data
         });
-    }catch(err) {
-        console.log(err);
-        res.status(500).send({
-            "status": 500,
-            "error": "Internal Server Error",
-            "message": `${err.message}`
+    }
+    const city_array = _cities_data.data;
+    const count = city_array.length;
+    if(counter > count){
+        return res.status(200).send({
+            "status": "success",
+            "statusCode": 206,
+            "error": "City not found at provided index",
+            "message": `City with name "${city_name}" not found at index : ${counter}. ` + (count > 1 ? `Accepted values are "1 - ${count}"` : `Accepted value is "1"`)
         })
-    };
+    }
+    const city = city_array[counter-1];
+    const _air_quality_data = await aqiController.fetchCurrentAirQualityIndex(city.lat, city.lon, start_date, end_date, timezone, lang);
+    if(_air_quality_data.error){
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": _air_quality_data.statusCode,
+            "error": _air_quality_data.error,
+            "message": _air_quality_data.message,
+            "data" : _air_quality_data.data
+        });
+    }
+    const air_quality = _air_quality_data.data;
+    return res.status(200).send({
+        "status": "success",
+        "statusCode": 200,
+        "city": city,
+        "data": air_quality,
+    });
 })
 
 router.get('/latlon', async (req, res) => {
@@ -91,8 +99,9 @@ router.get('/latlon', async (req, res) => {
     const lat = req.query.lat;
     const lon = req.query.lon;
     if(lat === undefined || lon === undefined || lat === "" || lon === "" || isNaN(lat) || isNaN(lon)){
-        return res.status(400).send({
-            "status": 400,
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": 400,
             "error": "Bad Request",
             "message": "Latitude and Longitude are required and must be numbers"
         });
@@ -103,15 +112,17 @@ router.get('/latlon', async (req, res) => {
 
     try{
         const air_quality = await aqiController.fetchCurrentAirQualityIndex(lat, lon, date, timezone, lang);
-        res.status(200).send({
-            "status": 200,
+        return res.status(200).send({
+            "status": "success",
+            "statusCode": 200,
             "message": "Success",
             "data": air_quality,
         });
     }catch(err) {
         console.log(err);
-        res.status(500).send({
-            "status": 500,
+        return res.status(200).send({
+            "status": "failed",
+            "statusCode": 500,
             "error": "Internal Server Error",
             "message": `${err.message}`
         })

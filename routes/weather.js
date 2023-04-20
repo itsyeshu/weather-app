@@ -20,7 +20,14 @@ router.get('/', async function(req, res) {
         }
         try{
             const data = await weatherController.getCurrentWeatherDataByLatLon(lat, lon, timezone, lang);
-            res.render('pages/latlon_weather', {
+            if(data.error){
+                return res.render('pages/city_not_found', {
+                    "error_code": "HTTP " + data.statusCode,
+                    "error": data.error,
+                    "message": data.message,
+                });
+            }
+            return res.render('pages/latlon_weather', {
                 "data" : data.data,
             });
         }catch(e){
@@ -31,12 +38,12 @@ router.get('/', async function(req, res) {
         const data = await weatherController.getCurrentWeatherData(city_name, counter, timezone, lang);
         if(data.error){
             return res.render('pages/city_not_found', {
-                "error_code": "HTTP " + data.status,
+                "error_code": "HTTP " + data.statusCode,
                 "error": data.error,
                 "message": data.message,
             });
         }
-        res.render('pages/weather', {
+        return res.render('pages/weather', {
             "data" : data.data,
         });
     }catch(e){

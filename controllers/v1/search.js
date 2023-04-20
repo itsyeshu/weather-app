@@ -20,12 +20,65 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
     // @param lang: Language of the results
     //
     // @return: Array of city objects
+    try{
+        var { data:city_data } = await axios.get(GET_CITY_ID_URI(clean_name(city_name), clean_limit(limit), clean_lang(lang)));
+    }catch(e){
+        return {
+            "status" : "failed",
+            "statusCode" : 500,
+            "error" : "Error fetching weather data for city",
+            "message" : e.message,
+            "query" : {
+                "city": city_name,
+                "lang": lang,
+                "limit": limit
+            },
+            "data" : {
+                "results": []
+            },
+            "count" : 0
+        };
+    }
 
-    const { data:city_data } = await axios.get(GET_CITY_ID_URI(clean_name(city_name), clean_limit(limit), clean_lang(lang)));
-    if(!city_data.results || city_data.results.length === 0) return {"data" : [], "count" : 0};
-    const city_array = city_data.results.map(i=>{return {"id" : i.id,"lat" : Math.round(i.latitude * 1000) / 1000,"lon" : Math.round(i.longitude * 1000) / 1000,"city" : {"name" : i.name,"country_flag" : country2flag(i.country_code),"country_code" : i.country_code,"country" : i.country,"state" : i.admin1 || "(N.A.)",}}});
+    if(!city_data.results || city_data.results.length === 0)
+        return {
+            "status" : "failed",
+            "statusCode" : 404,
+            "error" : "City not found",
+            "message" : `City with name "${city_name}" not found`,
+            "query" : {
+                "city": city_name,
+                "lang": lang,
+                "limit": limit
+            },
+            "data" : {"results": []},
+            "count" : 0
+        };
+    const city_array = city_data.results.map(i=>({
+        "id" : i.id,
+        "lat" : Math.round(i.latitude * 10000) / 10000,
+        "lon" : Math.round(i.longitude * 10000) / 10000,
+        "city" : {
+            "name" : i.name,
+            "country_flag" : country2flag(i.country_code),
+            "country_code" : i.country_code,
+            "country" : i.country,
+            "state" : i.admin1 || i.admin1 || "NA",
+            "timezone" : i.timezone,
+            "local_time" : new Date( new Date().toLocaleString('en-US', { timeZone : i.timezone })).toString()
+        },
+    }));
     return {
-        "data"  : city_array,
+        "status" : "success",
+        "statusCode" : 200,
+        "query" : {
+            "city": city_name,
+            "lang": lang,
+            "limit": limit
+        },
+        "data"  : {
+            "results" : city_array,
+        },
         "count" : city_array.length
     }
 }

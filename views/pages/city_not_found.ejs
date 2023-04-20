@@ -1,15 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>City not Found</title>
+    <%- include('../partials/head', {
+            title : "Live weather & forecast",
+            favicon : "/public/img/favicon.png",
+            og_img : "/public/img/favicon.png",
+            desc : "Weather app gives you the most accurate weather info that makes it worth visiting.",
+            dark_theme : false,
+    }); %>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 </head>
 <body>
-    <h1>
-        <%= message %>
-    </h1>
-    <p><em> <%- error_code %></em></p>
+    <%- include('../partials/header', {
+        show_back_button: false,
+    }); %>
+    <main id="app">
+        <div id="container">
+            <div id="background">
+            </div>
+            <div id="content">
+                <section class="section center_section" id="home_section">
+                    <div class="max_width">
+                        <div class="content">
+                            <div class="img_cont" id="rotating_globe_img_cont">
+                                <img src="/public/img/alien_abduction.gif" alt="Rotating globe">
+                            </div>
+                            <h2 class="content_title"><%= error %></h1>
+                            <h3 class="content_subtitle"><%= message %></h2>
+                            <p class="content_desc"><em> <%= error_code %></em></p>
+                            <div style="padding:12px 0;">
+                                <a href="/" class="simpl_btn btn" style="background:#7bd3ca;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill="currentColor" style="padding:4px;vertical-align: bottom;margin-left:-6px;"><path xmlns="http://www.w3.org/2000/svg" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Go back
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <script type="text/javascript" src="/public/js/script.js"></script>
+    <script type="text/javascript" src="/public/js/search_script.js"></script>
 </body>
 </html>

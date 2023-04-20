@@ -4,31 +4,39 @@ const html = document.documentElement;
 const gps_button = document.getElementById("gps_button");
 const toggle_theme_button = document.getElementById("toggle_theme_button");
 const gps_info_dialog = document.getElementById("gps_info_dialog");
+
+const DEFAULT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
+
 var dark_theme;
 
 gps_button && gps_button.addEventListener("click", e => {
     const success_function = (e) => {
         try {
-            const {latitude:lat, longitude:lon} = e.coords;
-            // alert(getAddr(lat, lon));
+            const { latitude:lat, longitude:lon } = e.coords;
+            const URL = (lat, lon) => `/search/?lat=${lat}&lon=${lon}&timezone=${DEFAULT_TIME_ZONE}`;
+            window.location.href = URL(lat, lon);
         } catch (e) {
             console.log(e);
         }
-        end_function(e);
     }
     const error_function = (e) => {
-        console.log(e);
+        alert(e.message);
         end_function(e);
     }
     const end_function = (e) => {
         gps_info_dialog.close();
     }
-    // navigator.geolocation.getCurrentPosition(success_function, error_function);
-    gps_info_dialog.showModal();
+    const main = (e) => {
+        navigator.geolocation.getCurrentPosition(success_function, error_function, {
+            enableHighAccuracy: true,
+            timeout: 5000
+        });
+        gps_info_dialog.showModal();
+    }
+    main(e);
 });
 
 function change_to_theme(theme) {
-    console.log(dark_theme, theme);
     const DARK_THEME_COLOR = "#394d56";
     const LIGHT_THEME_COLOR = "#327648";
 
@@ -43,11 +51,11 @@ function change_to_theme(theme) {
     const path_from = document.getElementById("path_theme");
 
     const path_to = !theme?light_theme_path:dark_theme_path;
-    path_from.setAttribute("d", path_to.getAttribute("d"));
+    if(path_from && path_to) path_from.setAttribute("d", path_to.getAttribute("d"));
 
     dark_theme = theme;
 
-    // localStorage.setItem("dark_theme", theme);
+    localStorage.setItem("dark_theme", theme);
 }
 
 toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
@@ -55,48 +63,26 @@ toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
     change_to_theme(dark_theme);
 });
 
-const getAddr = (lat, lon) => {
-    var latlon = new google.maps.LatLng(lat, lon);
-    geocoder.geocode({'latLng': latlon}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-      console.log(results)
-        if (results[1]) {
-         //formatted address
-         alert(results[0].formatted_address)
-        //find country name
-             for (var i=0; i<results[0].address_components.length; i++) {
-            for (var b=0;b<results[0].address_components[i].types.length;b++) {
-
-            //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
-                if (results[0].address_components[i].types[b] == "administrative_area_level_1") {
-                    //this is the object you are looking for
-                    city= results[0].address_components[i];
-                    break;
-                }
-            }
-        }
-        //city data
-        alert(city.short_name + " " + city.long_name)
-
-
-        } else {
-          alert("No results found");
-        }
-      } else {
-        alert("Geocoder failed due to: " + status);
-      }
-    });
-}
-
 function initialize() {
-    // geocoder = new google.maps.Geocoder();
-    // if(localStorage.getItem("dark_theme") && localStorage.getItem("dark_theme") === null) {
-        dark_theme = html.classList.contains("theme-dark");
-    // }else{
-    //     dark_theme = localStorage.getItem("dark_theme");
-    // }
-    // console.log("Initialize called!")
-    // change_to_theme(dark_theme);
+    const animate_clock = (clock, date) =>{
+        const [second_hand, minute_hand, hour_hand] = clock.querySelectorAll(".clock_hand");
+        const second = date.getSeconds();
+        const minute = date.getMinutes();
+        const hour = date.getHours() % 12;
+        if(hour >= 12 || hour <= 0) hour_hand.style.transition = "none";
+        else  hour_hand.style.transition = "";
+        if(minute >= 59 || minute <= 0) minute_hand.style.transition = "none";
+        else minute_hand.style.transition = "";
+        if(second >= 59 || second <= 0) second_hand.style.transition = "none";
+        else second_hand.style.transition = "";
+
+        hour_hand.style.transform = "rotate(" + (hour / 12 * 360) + "deg)";
+        minute_hand.style.transform = "rotate(" + (minute / 60 * 360 + 360) + "deg)";
+        second_hand.style.transform = "rotate(" + (second / 60 * 360) + "deg)";
+    }
+    dark_theme = html.classList.contains("theme-dark");
+    const clock = document.querySelector(".clock");
+    clock && setInterval(function(){ animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })));}, 1000);
 }
 
 window.addEventListener("DOMContentLoaded", initialize);

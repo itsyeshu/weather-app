@@ -6,6 +6,7 @@ const DEFAULT = require("./constants");
 // Controllers
 const searchController = require("./search");
 const airQualityController = require("./air_quality");
+const reverseGeocodingController = require("./reverse_geocoding");
 
 // API urls
 const API_URL = "https://api.open-meteo.com/v1"
@@ -30,32 +31,65 @@ const getShortDate = (date) => {var new_date = new Date(date);return new_date.ge
 // Controller functions
 const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
     counter = Math.max(1, parseInt(counter));
-    const { data:city_array, count } = await searchController.fetchCitiesFromName(name, limit=Math.max(counter, DEFAULT.DEFAULT_CITY_LIMIT), lang);
-
-    if(count == 0){
+    const _cities_data = await searchController.fetchCitiesFromName(name, limit=Math.max(counter, DEFAULT.DEFAULT_CITY_LIMIT), lang);
+    if(_cities_data.error){
         return {
-            "status": 404,
-            "data" : null,
-            "error": "City not found",
-            "message": `City with name "${name}" does not exist`
+            "status": "failed",
+            "statusCode": _cities_data.statusCode,
+            "error": _cities_data.error,
+            "message": _cities_data.message,
+            "data": _cities_data.data
         }
-    }else if(counter > count){
+    }
+    const { data:cities, count } = _cities_data;
+    if(counter > count){
         return {
-            "status": 206,
-            "data" : null,
-            "error": "City not found in the given range",
-            "message": `City with name "${name}" does not exist inside the range of "1 to ${city_array.length}"`
+            "status" : "failed",
+            "statusCode": 206,
+            "error": "City not found at the given index",
+            "message": `City with name "${name}" not found at index : ${counter}. ` + (count>1?`Accepted values are "1 - ${count}"`: "Accepted value is 1"),
+            "data" : {},
         }
     }
 
-    const { id, lat, lon, city } = city_array[counter-1];
-    const { data:weather_data } = await axios.get(GET_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
-    const { data:air_quality_index_data } = await airQualityController.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
+    const { id, lat, lon, city } = cities.results[counter-1];
 
+    try{
+        var { data:weather_data } = await axios.get(GET_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
+    }catch(e){
+        return {
+            "status" : "failed",
+            "statusCode": 500,
+            "error": "Internal server error",
+            "message": e.message,
+            "data" : {},
+        }
+    }
+    const { data:_air_quality_index_data } = await airQualityController.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
+    if(_air_quality_index_data.error){
+        return {
+            "status": "failed",
+            "statusCode": _air_quality_index_data.statusCode,
+            "error": _air_quality_index_data.error,
+            "message": _air_quality_index_data.message,
+            "data": {}
+        }
+    }
+    const air_quality_index_data = _air_quality_index_data.data;
     const current_hour = new Date(weather_data.current_weather.time).getHours();
 
     weather_data.hourly_units.windspeed_10m = "Km/h";
     weather_data.hourly_units.winddirection_10m = "°";
+
+    const tabs = [];
+    if(id == 1261977) tabs.push({
+        "tab" : "Hometown",
+        "class" : "",
+    });
+    if(Math.round(weather_data.current_weather.temperature) > 40) tabs.push({
+        "tab" : "Stay home, intense heat!!",
+        "class" : "tab_alert",
+    });
 
     const data = {
         "id" : id,
@@ -63,12 +97,14 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
         "lon" : lon,
         "city_name" : city.name,
         "city" : city,
-
+        "tabs" : tabs,
         "query" : {
             "city_name" : name,
-            "results" : city_array,
+            "results" : cities.results,
             "counter" : counter,
-            "results_count" : city_array.length,
+            "timezone" : timezone,
+            "lang" : lang,
+            "results_count" : count,
         },
         "current" : {
             "dark_theme" : !weather_data.current_weather.is_day,
@@ -124,23 +160,73 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
     }
     data.daily.forecast = forecast_data;
     return {
-        "status": 200,
+        "status" : "success",
+        "statusCode": 200,
         "data" : data,
     };
 }
 
 const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
-    const { data:weather_data } = await axios.get(GET_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
-    const { data:air_quality_index_data } = await airQualityController.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
+    try{
+        var { data:weather_data } = await axios.get(GET_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
+    } catch(err){
+        return {
+            "status" : "failed",
+            "statusCode": 500,
+            "error": "Internal server error",
+            "message": e.message,
+        }
+    }
+    const { data:_air_quality_index_data } = await airQualityController.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
 
+    if(_air_quality_index_data.error){
+        return {
+            "status" : "failed",
+            "statusCode" : _air_quality_index_data.statusCode,
+            "error" : _air_quality_index_data.error,
+            "message" : _air_quality_index_data.message,
+            "data" : _air_quality_index_data.data,
+        }
+    }
+
+    const air_quality_index_data = _air_quality_index_data.data;
+
+    const _cities_data = await reverseGeocodingController.getCityByLatLon(lat, lon);
+    if(_cities_data.error){
+        return {
+            "status" : "failed",
+            "statusCode" : _cities_data.statusCode,
+            "error" : _cities_data.error,
+            "message" : _cities_data.message,
+            "data" : _cities_data.data,
+        }
+    }
+    const cities_data = _cities_data.data;
+    const city = cities_data.results[0];
     const current_hour = new Date(weather_data.current_weather.time).getHours();
 
     weather_data.hourly_units.windspeed_10m = "Km/h";
     weather_data.hourly_units.winddirection_10m = "°";
 
+    
+    const tabs = [];
+    if(Math.round(weather_data.current_weather.temperature) > 40) tabs.push({
+        "tab" : "Stay home, intense heat",
+        "class" : "tab_alert",
+    });
+
     const data = {
-        "lat" : lat,
-        "lon" : lon,
+        "lat" : Math.round(city.lat * 10000) / 10000,
+        "lon" : Math.round(city.lon * 10000) / 10000,
+        "city_name" : city.name,
+        "city" : city.city,
+        "tabs" : tabs,
+        "query" : {
+            "lat" : lat,
+            "lon" : lon,
+            "timezone" : timezone,
+            "lang" : lang,
+        },
         "current" : {
             "dark_theme" : !weather_data.current_weather.is_day,
             "weather" : getCurrentWeatherInfo(weather_data.current_weather.weathercode, weather_data.current_weather.is_day),
@@ -152,6 +238,7 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
             "temperature_max" : Math.round(weather_data.daily.temperature_2m_max[0]),
             "temperature_min" : Math.round(weather_data.daily.temperature_2m_min[0]),
             "apparent_temperature" : Math.round(weather_data.daily.apparent_temperature_max[0] - ((weather_data.daily.temperature_2m_max[0] - weather_data.current_weather.temperature)*(weather_data.daily.apparent_temperature_max[0] - weather_data.daily.apparent_temperature_min[0])/(weather_data.daily.temperature_2m_max[0] - weather_data.daily.temperature_2m_min[0]))),
+
 
             "others" : {
                 "wind_speed" : Math.round(weather_data.current_weather.windspeed),
@@ -195,7 +282,8 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
     }
     data.daily.forecast = forecast_data;
     return {
-        "status": 200,
+        "status": "success",
+        "statusCode": 200,
         "data" : data,
     };
 }

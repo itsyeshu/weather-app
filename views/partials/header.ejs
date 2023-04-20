@@ -1,70 +1,17 @@
-<style>
-    #header{
-        position: fixed;
-        top:0;
-        padding:0;
-        width:100%;
-        height: var(--header-height, 64px);
-        z-index: 2000;
-        color: var(--header-font-color, #fafafa);
-    }
-    #header .header_cont{
-        position: relative;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-        width:90%;
-        max-width: var(--max-width, 1000px);
-        margin:0 auto;
-    }
-    #logo{height:100%;}
-    #logo .logo_box{height:100%;align-items: center;}
-    #logo .logo_box+.logo_box{
-        margin-left:12px;
-    }
-    #logo .head_anchor{
-        width:auto;
-        flex-shrink: 0;
-        text-decoration: none;
-        color:inherit;
-    }
-    #logo h1{
-        font-size: 18px;
-        font-weight: 400;
-        margin:0;
-        padding:0;
-        line-height: 26px;
-        padding: 0 12px 0 0;
-    }
-    #logo img{
-        display: block;
-        height:54px;
-        width:auto;
-    }
-    .back_button{
-        padding: 10px 4px;
-        border-radius: 0;
-        border: none;
-        min-width: 34px;
-        max-width: 34px;
-        margin: 0 0 0 -10px;
-    }
-    @media screen and (max-width: 800px) {
-        #header .header_cont{
-            width:calc(100% - 40px);
-            margin: 0 20px;
-        }
-
-    }
-</style>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="svg" style="display:none;">
+    <defs>
+        <path id="path_light_theme" xmlns="http://www.w3.org/2000/svg" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/>
+        <path id="path_dark_theme" xmlns="http://www.w3.org/2000/svg" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"/>
+    </defs>
+</svg>
 <header id="header">
     <div class="header_cont flex">
         <div id="logo" class="flex">
             <div class="logo_box flex">
                 <% if (show_back_button) { %>
                     <a class="simpl_btn btn_sq btn_opt back_button" href="<%= back_button_link %>">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 96 960 960" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M480 882.564 174.436 576.333 480 270.769l37.179 37.436-243.385 242.872h512.437v51.179H273.794l243.385 242.872L480 882.564Z"/></svg>
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 96 960 960" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M480 882.564 174.436 576.333 480 270.769l37.179 37.436-243.385 242.872h512.437v51.179H273.794l243.385 242.872L480 882.564Z"/></svg> -->
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                     </a>
                 <% } %>
                 <a href="/" class="head_anchor">
@@ -82,9 +29,13 @@
         </div>
         <div class="nav">
             <div class="logo_box flex">
-                <a href="https://github.com/itsyeshu/weather-app/" target="_blank" rel="noopener" class="simpl_btn btn_sq btn_opt hvr" hvr="Git repo">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 92 92" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M90.156 41.965 50.036 1.848a5.913 5.913 0 0 0-8.368 0l-8.332 8.332 10.566 10.566a7.03 7.03 0 0 1 7.23 1.684 7.043 7.043 0 0 1 1.673 7.277l10.183 10.184a7.026 7.026 0 0 1 7.278 1.672 7.04 7.04 0 0 1 0 9.957 7.045 7.045 0 0 1-9.961 0 7.038 7.038 0 0 1-1.532-7.66l-9.5-9.497V59.36a7.04 7.04 0 0 1 1.86 11.29 7.04 7.04 0 0 1-9.957 0 7.04 7.04 0 0 1 0-9.958 7.034 7.034 0 0 1 2.308-1.539V33.926a7.001 7.001 0 0 1-2.308-1.535 7.049 7.049 0 0 1-1.516-7.7L29.242 14.273 1.734 41.777a5.918 5.918 0 0 0 0 8.371L41.855 90.27a5.92 5.92 0 0 0 8.368 0l39.933-39.934a5.925 5.925 0 0 0 0-8.371"/></svg>
+                <a href="/" class="simpl_btn btn_sq btn_opt hvr" hvr="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g xmlns="http://www.w3.org/2000/svg"><path d="M22,20.59l-4.69-4.69C18.37,14.55,19,12.85,19,11c0-4.42-3.58-8-8-8c-4.08,0-7.44,3.05-7.93,7h2.02C5.57,7.17,8.03,5,11,5 c3.31,0,6,2.69,6,6s-2.69,6-6,6c-2.42,0-4.5-1.44-5.45-3.5H3.4C4.45,16.69,7.46,19,11,19c1.85,0,3.55-0.63,4.9-1.69L20.59,22 L22,20.59z"></path><polygon points="8.43,9.69 9.65,15 11.29,15 12.55,11.22 13.5,13.5 15.5,13.5 15.5,12 14.5,12 13.25,9 11.71,9 10.59,12.37 9.35,7 7.7,7 6.45,11 1,11 1,12.5 7.55,12.5"></polygon></g></svg>
                 </a>
+                <button class="simpl_btn btn_sq btn_opt back_button hvr" hvr="More" style="margin:0 -10px 0 0;">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 92 92" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M90.156 41.965 50.036 1.848a5.913 5.913 0 0 0-8.368 0l-8.332 8.332 10.566 10.566a7.03 7.03 0 0 1 7.23 1.684 7.043 7.043 0 0 1 1.673 7.277l10.183 10.184a7.026 7.026 0 0 1 7.278 1.672 7.04 7.04 0 0 1 0 9.957 7.045 7.045 0 0 1-9.961 0 7.038 7.038 0 0 1-1.532-7.66l-9.5-9.497V59.36a7.04 7.04 0 0 1 1.86 11.29 7.04 7.04 0 0 1-9.957 0 7.04 7.04 0 0 1 0-9.958 7.034 7.034 0 0 1 2.308-1.539V33.926a7.001 7.001 0 0 1-2.308-1.535 7.049 7.049 0 0 1-1.516-7.7L29.242 14.273 1.734 41.777a5.918 5.918 0 0 0 0 8.371L41.855 90.27a5.92 5.92 0 0 0 8.368 0l39.933-39.934a5.925 5.925 0 0 0 0-8.371"/></svg> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                </button>
             </div>
         </div>
     </div>
