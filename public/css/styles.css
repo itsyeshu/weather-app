@@ -246,6 +246,13 @@ button {
     border-radius: 24px;
     transition: all 0.23s ease-out;
     box-sizing: border-box;
+    background: var(--background-color, #fff);
+}
+
+.btn_opt.btn_dark{
+    background:var(--box-background-color, #1e1e1e);
+    color:var(--header-text-color, #fff);
+    border-color: transparent;
 }
 
 .btn_opt{
@@ -257,7 +264,10 @@ button {
     outline: none;
     background: var(--btn-background-color-on-focus, rgba(255, 255, 255, 0.1));
 }
-#header a:focus, #header .btn_opt:focus{
+#header .btn_opt{
+    background: var(--header-background-color, transparent);
+}
+#header a:focus, .btn_opt.btn_dark, #header .btn_opt:focus{
     outline: none;
     background: var(--header-btn-background-color-on-focus, rgba(255, 255, 255, 0.1));
 }
@@ -410,6 +420,9 @@ button {
     }
     .section>.max_width{
         width:calc(100% - 2 * var(--signature-spacing, 12px));
+        margin:5% var(--signature-spacing, 12px);
+    }
+    #home_section>.max_width{
         margin:var(--signature-spacing, 12px) var(--signature-spacing, 12px) 36px var(--signature-spacing, 12px);
     }
     #city_weather,
@@ -420,9 +433,7 @@ button {
         flex-direction: column;
     }
 }
-</style>
 
-<style>
 .temperature_box {
     width: 100%;
     align-items: flex-end;
@@ -441,9 +452,9 @@ button {
     background: var(--background-image-color, #72a1b8);
 }
 
-.box.invert .weather_icon {
+/* .box.invert .weather_icon {
     background: #0002;
-}
+} */
 
 .weather_icon img {
     width: 100%;
@@ -644,4 +655,45 @@ button {
         margin: 0 20px;
     }
 
+}
+
+/* City card */
+.city_card_container{
+    width:100%;
+    padding: var(--box-spacing, 12px);
+    margin: 0 calc(-1 * var(--box-spacing, 12px));
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--box-spacing, 12px);
+}
+.city_card{
+    width: calc(100% - 1 * var(--box-spacing, 12px));
+    max-width:320px;
+    overflow:visible;
+    flex-grow:0;
+    flex-shrink:0;
+    scroll-snap-stop: always;
+    scroll-snap-align: start;
+}
+.city_card .city_card_cont{
+    width:100%;
+    background: var(--background-color, #fafafa);
+    padding: 1px 0;
+    border-radius: var(--border-radius-for-box, 12px);
+    border:solid 1px var(--on-background-border-color, #6e6e6e);
+    position:relative;
+    z-index: 1;
+    overflow:hidden;
+}
+.city_card+.city_card{
+    margin-left: var(--box-spacing, 12px);
+}
+
+.city_card .is_day_background{
+    position:absolute;top:0;right:0;width:150px;height:64px;z-index:0;overflow:hidden;
+}
+.city_card .is_day_overlay{
+    position:absolute;top:0;width:100%;height:100%;background:linear-gradient(203.11deg, transparent 25%, var(--background-color) 50%);
+}
+.city_card .city_card_main_cont{
+    width: 100%;position:relative;z-index: 1;
 }

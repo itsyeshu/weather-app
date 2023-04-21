@@ -10,7 +10,6 @@
             desc : `${data.city_name} is a beautiful city to live and ${data.current.weather.desc} weather makes it worth visiting it.`,
             dark_theme : data.current.dark_theme,
     }); %>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&sensor=false"></script>
 </head>
 <body>
     <%- include('../partials/header', {
@@ -232,9 +231,9 @@
                 <dialog id="gps_info_dialog" class="dialog">
                     <div class="dialog-sect dialog-title-sect">
                         <div class="dialog-title">
-                            Redirecting ...
+                            Redirecting
                             <span>
-                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width:34px;height:34px;vertical-align: middle;margin:0 0 -4px 2px;">
+                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;">
                             </span>
                         </div>
                     </div>

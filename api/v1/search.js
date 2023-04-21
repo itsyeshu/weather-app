@@ -16,7 +16,11 @@ router.get('/', async (req, res) => {
                 "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
             },
             "error": "Bad Request",
-            "message": "City name is required"
+            "message": "City name is required",
+            "data": {
+                "results": []
+            },
+            "count": 0
         });
     }
     const lang = req.query.lang;
@@ -31,11 +35,15 @@ router.get('/', async (req, res) => {
                 "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
             },
             "error": "Bad Request",
-            "message": "Limit must be a positive integer"
+            "message": "Limit must be a positive integer",
+            "data": {
+                "results": []
+            },
+            "count": 0
         });
     }
     try{
-        const {data, count} = await searchController.fetchCitiesFromName(city_name, limit, lang);
+        const data = await searchController.fetchCitiesFromName(city_name, limit, lang);
         if(data.error){
             return res.status(200).send({
                 "status": "failed",
@@ -46,9 +54,14 @@ router.get('/', async (req, res) => {
                     "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
                 },
                 "error": data.error,
-                "message": data.message
+                "message": data.message,
+                "data": {
+                    "results": []
+                },
+                "count": 0
             });
         }
+        const {data:city_array, count} = data;
         return res.status(200).send({
             "status": "success",
             "statusCode": 200,
@@ -58,7 +71,8 @@ router.get('/', async (req, res) => {
                 "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
             },
             "message": "Success",
-            "data": data
+            "data": city_array,
+            "count": count
         });
     }catch(err) {
         console.log(err);
@@ -71,11 +85,14 @@ router.get('/', async (req, res) => {
                 "limit": req.query.limit || DEFAULT.DEFAULT_CITY_LIMIT
             },
             "error": "Internal Server Error",
-            "message": `${err.message}`
+            "message": `${err.message}`,
+            "data": {
+                "results": []
+            },
+            "count": 0
         })
     };
 });
-
 
 
 module.exports = router;

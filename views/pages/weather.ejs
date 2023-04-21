@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-    <% if(data.current.dark_theme) { %> class="theme-dark" <% } %>
-    >
+    <% if(data.current.dark_theme) { %> class="theme-dark" <% } %> >
 <head>
     <%- include('../partials/head', {
             title : `${data.city_name}, ${data.city.country_code} • ${data.current.weather.desc}`,
@@ -10,7 +9,6 @@
             desc : `${data.city_name} is a beautiful city to live and ${data.current.weather.desc} weather makes it worth visiting it.`,
             dark_theme : data.current.dark_theme,
     }); %>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&sensor=false"></script>
 </head>
 <body>
     <%- include('../partials/header', {
@@ -112,15 +110,6 @@
                                         <button class="simpl_btn btn_sq btn_opt hvr" id="gps_button" hvr="GPS">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
                                         </button>
-                                        <% if(data.current.dark_theme) {%>
-                                            <button class="simpl_btn btn_sq btn_opt hvr" id="toggle_theme_button" hvr="Dark theme">
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path id="path_theme" xmlns="http://www.w3.org/2000/svg" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"/></svg>
-                                            </button>
-                                        <% } else { %>
-                                            <button class="simpl_btn btn_sq btn_opt hvr" id="toggle_theme_button" hvr="Light theme">
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path id="path_theme" xmlns="http://www.w3.org/2000/svg" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/></svg>
-                                            </button>
-                                        <% } %>
                                         <button class="simpl_btn btn_sq btn_opt hvr" id="add_label" hvr="Add to speed list">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path xmlns="http://www.w3.org/2000/svg" d="M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z"/></svg>
                                         </button>
@@ -251,9 +240,9 @@
                 <dialog id="gps_info_dialog" class="dialog">
                     <div class="dialog-sect dialog-title-sect">
                         <div class="dialog-title">
-                            Redirecting ...
+                            Redirecting
                             <span>
-                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width:34px;height:34px;vertical-align: middle;margin:0 0 -4px 2px;">
+                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;">
                             </span>
                         </div>
                     </div>

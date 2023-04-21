@@ -70,7 +70,7 @@ input[type="text"]:focus{
     display: block;
     max-width: 100%;
     text-decoration: none;
-    padding: 0 calc(1.8 * var(--box-spacing, 12px));
+    padding: 0 calc(1 * var(--box-spacing, 12px));
 }
 #search_results_cont .search_result:hover{
     background: var(--btn-background-color-on-hover, #c3c3c3);

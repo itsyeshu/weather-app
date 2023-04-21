@@ -31,7 +31,7 @@ const searchCityResults = (search_input) => {
     const parseData = (data) => {
         const results_element = document.getElementById("search_results_cont");
         results_element.innerHTML = `
-            <div class="box_content" style="margin: calc(-0.5 * var(--signature-spacing, 12px)) 0 calc(0.5 * var(--signature-spacing, 12px)) 0;"><span style="width:auto;white-space: nowrap;margin-right: calc(0.5 * var(--signature-spacing, 12px));font-size: 11px;">Results for '${data.query.city}'</span></div>
+            <div class="box_content" style="margin: calc(-0.5 * var(--signature-spacing, 12px)) 0 calc(0.5 * var(--signature-spacing, 12px)) 0;"><span style="width:auto;white-space: nowrap;margin-right: calc(0.5 * var(--signature-spacing, 12px));font-size: 11px;">Results for '${data.query.city}' (${data.count})</span></div>
         `;
         const getCountryFlagUrl = (country_code) => `https://open-meteo.com/images/country-flags/${country_code.toLowerCase()}.svg`;
         if(data.error){
@@ -51,9 +51,10 @@ const searchCityResults = (search_input) => {
         }
         data.data.results.forEach((result, index) => {
             const city = result.city;
+            // console.log(result);
             const result_element = document.createElement("a");
             result_element.classList.add("search_result");
-            result_element.href = `/search/?city=${city.name}&counter=${index+1}&timezone=${DEFAULT_TIME_ZONE}`;
+            result_element.href = `/search/?city=${data.query.city}&counter=${index+1}&timezone=${DEFAULT_TIME_ZONE}`;
 
             result_element.innerHTML = `
                 <div class="city_name_box">
@@ -70,7 +71,7 @@ const searchCityResults = (search_input) => {
     const main = async (name) => {
         if(name)
         {
-            const results = await searchCity(name);
+            const results = await searchCity(encodeURIComponent(name));
             parseData(results);
         }else{
             const results_element = document.getElementById("search_results_cont");

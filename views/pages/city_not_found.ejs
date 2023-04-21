@@ -8,7 +8,6 @@
             desc : "Weather app gives you the most accurate weather info that makes it worth visiting.",
             dark_theme : false,
     }); %>
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 </head>
 <body>
     <%- include('../partials/header', {
@@ -23,7 +22,7 @@
                     <div class="max_width">
                         <div class="content">
                             <div class="img_cont" id="rotating_globe_img_cont">
-                                <img src="/public/img/alien_abduction.gif" alt="Rotating globe">
+                                <img src="/public/img/error.gif" alt="Rotating globe">
                             </div>
                             <h2 class="content_title"><%= error %></h1>
                             <h3 class="content_subtitle"><%= message %></h2>

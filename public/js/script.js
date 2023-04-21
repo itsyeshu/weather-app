@@ -81,8 +81,9 @@ function initialize() {
         second_hand.style.transform = "rotate(" + (second / 60 * 360) + "deg)";
     }
     dark_theme = html.classList.contains("theme-dark");
-    const clock = document.querySelector(".clock");
-    clock && setInterval(function(){ animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })));}, 1000);
+    change_to_theme(dark_theme);
+    const clocks = document.querySelectorAll(".clock");
+    clocks && clocks.length && setInterval(function(){ clocks.forEach(clock => {animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })))})}, 1000);
 }
 
 window.addEventListener("DOMContentLoaded", initialize);
