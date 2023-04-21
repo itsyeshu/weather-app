@@ -305,6 +305,10 @@ button {
     margin-left: 8px;
 }
 
+#header .btn_opt+.btn_opt{
+    margin-left: 2px;
+}
+
 [hvr]{
     position:relative;
 }
