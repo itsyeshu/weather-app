@@ -1,10 +1,7 @@
-const express = require("express");
-const router = express.Router();
-
 const DEFAULT = require("./constants");
-const searchController = require(DEFAULT.DIR +"/search");
+const searchAPIReducer = require(DEFAULT.REDUCER_DIR + "/search");
 
-router.get('/', async (req, res) => {
+const searchAPIController = async (req, res) => {
     const city_name = req.query.city || "";
     if(city_name === ""){
         return res.status(200).send({
@@ -43,7 +40,7 @@ router.get('/', async (req, res) => {
         });
     }
     try{
-        const data = await searchController.fetchCitiesFromName(city_name, limit, lang);
+        const data = await searchAPIReducer.fetchCitiesFromName(city_name, limit, lang);
         if(data.error){
             return res.status(200).send({
                 "status": "failed",
@@ -75,7 +72,6 @@ router.get('/', async (req, res) => {
             "count": count
         });
     }catch(err) {
-        console.log(err);
         return res.status(200).send({
             "status": "failed",
             "statusCode": 500,
@@ -92,7 +88,8 @@ router.get('/', async (req, res) => {
             "count": 0
         })
     };
-});
+}
 
-
-module.exports = router;
+module.exports = {
+    searchAPIController,
+};

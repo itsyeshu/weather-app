@@ -54,8 +54,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <% if(data.tabs && data.tabs.length){ %>
-                                        <div class="box_container">
+                                    <div class="box_container" id="tab_container">
+                                        <% if(data.tabs && data.tabs.length){ %>
                                             <div class="box_content" style="margin:calc(-0.5 * var(--signature-spacing, 12px)) 0 var(--signature-spacing, 12px) 0;">
                                                 <% for (let index = 0; index < data.tabs.length; index++) { %>
                                                     <span class="tab <%= data.tabs[index].class %>">
@@ -63,8 +63,8 @@
                                                     </span>
                                                 <% } %>
                                             </div>
-                                        </div>
-                                    <% } %>
+                                        <% } %>
+                                    </div>
                                     <% if(data.query.results_count > 1){ %>
                                         <div class="box_container">
                                             <div class="box_content flex" style="margin: calc(-0.5 * var(--signature-spacing, 12px)) 0 calc(0.5 * var(--signature-spacing, 12px)) 0;"><span style="width:auto;white-space: nowrap;margin-right: calc(0.5 * var(--signature-spacing, 12px));font-size: 11px;">Results for <%= data.query.city_name %></span><hr class="hr"></div>
@@ -73,7 +73,7 @@
                                             <div class="wide_block scroll-y flex">
                                                 <% for( let index = 1; index <= data.query.results_count; index++ ) { %>
                                                     <% if (index != data.query.counter) { %>
-                                                        <a href="/search/?city=<%= data.query.city_name %>&counter=<%= index %>" class="tag special_link">
+                                                        <a href="/search/?city=<%= data.query.city_name %>&counter=<%= index %>&timezone=<%= data.query.timezone %>" class="tag special_link">
                                                             <b>
                                                                 <%= data.query.results[index-1].city.name %>
                                                                 <span class="country_code" title="<%= data.query.results[index-1].city.state %>, <%= data.query.results[index-1].city.country %>"><img src="https://open-meteo.com/images/country-flags/<%= data.query.results[index-1].city.country_code.toLowerCase() %>.svg" alt="<%= data.query.results[index-1].city.country_code %>"></span>
@@ -110,7 +110,7 @@
                                         <button class="simpl_btn btn_sq btn_opt hvr" id="gps_button" hvr="GPS">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path xmlns="http://www.w3.org/2000/svg" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
                                         </button>
-                                        <button class="simpl_btn btn_sq btn_opt hvr" id="add_label" hvr="Add to speed list">
+                                        <button class="simpl_btn btn_sq btn_opt hvr" id="add_label" data-id="<%= data.id %>" data-city-name="<%= data.query.city_name %>" data-city-counter="<%= data.query.counter %>" hvr="Add to speed list">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path xmlns="http://www.w3.org/2000/svg" d="M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z"/></svg>
                                         </button>
                                         <a class="simpl_btn btn_sq btn_opt hvr" href="https://github.com/itsyeshu/weather-app/" target="_blank" hvr="Embed iframe">
@@ -249,13 +249,80 @@
                     <div class="dialog-sect dialog-body">
                         <p>Please wait while we get your live weather.</p>
                     </div>
+                </dialog>
+                <dialog id="add_speedlist_dialog" class="dialog">
+                    <div class="dialog-sect dialog-title-sect">
+                        <div class="dialog-title">
+                            Add a label
+                        </div>
+                    </div>
+                    <div class="dialog-sect dialog-body">
+                        <p>Please add a label to this place.</p>
+                    </div>
                     <div class="dialog-sect dialog-footer">
-                        <button class="simpl_btn btn" onclick="this.parentNode.parentNode.close();">Okay!</button>
+                        <div class="form">
+                            <input type="text" id="speedlist_label" class="simpl_input" placeholder="Label (Hometown, Workplace, etc)">
+                            <br/><br/>
+                            <button class="simpl_btn btn bold_btn" id="speedlist_save_btn">
+                                Save
+                            </button>
+                            <button class="simpl_btn btn" onclick="this.parentNode.parentNode.parentNode.close();">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </dialog>
+                <dialog id="loading_dialog_add_speedlist" class="dialog">
+                    <div class="dialog-sect dialog-title-sect">
+                        <div class="dialog-title">
+                            Adding to your speed-list
+                            <span>
+                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="dialog-sect dialog-body">
+                        <p>Please wait while we add "<%= data.city.name %>" to your speed-list.</p>
+                    </div>
+                </dialog>
+                <dialog id="loading_dialog_remove_speedlist" class="dialog">
+                    <div class="dialog-sect dialog-title-sect">
+                        <div class="dialog-title">
+                            Removing from your speed-list
+                            <span>
+                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="dialog-sect dialog-body">
+                        <p>Please wait while we remove "<%= data.city.name %>" from your speed-list.</p>
+                    </div>
+                </dialog>
+                <dialog id="error_dialog" class="dialog">
+                    <div class="dialog-sect dialog-title-sect">
+                        <div class="dialog-title">
+                            Error encountered
+                            <span>
+                                <img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="dialog-sect dialog-body">
+                        <p>Please contact me through <a href="https://github.com/itsyeshu/weather-app">Github</a>.</p>
+                    </div>
+                    <div class="dialog-sect dialog-footer">
+                        <a href="https://github.com/itsyeshu/weather-app" target="_blank" rel="noopener" class="simpl_btn btn bold_btn" onclick = "this.parentNode.parentNode.close();">
+                            Contact me
+                        </a>
+                        <button class="simpl_btn btn" onclick = "this.parentNode.parentNode.close();">
+                            Close
+                        </button>
                     </div>
                 </dialog>
             </div>
         </div>
     </main>
     <script type="text/javascript" src="/public/js/script.js"></script>
+    <script type="text/javascript" src="/public/js/weather_script.js"></script>
 </body>
 </html>

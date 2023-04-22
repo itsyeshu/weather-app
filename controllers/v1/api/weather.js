@@ -1,7 +1,7 @@
 const DEFAULT = require("./constants");
 const weatherReducer = require(DEFAULT.REDUCER_DIR + "/weather");
 
-const weatherController = async (req, res) => {
+const weatherAPIController = async (req, res) => {
     const city_name = req.query.city;
     const counter = req.query.counter || 1;
     const timezone = req.query.timezone || DEFAULT.DEFAULT_TIME_ZONE;
@@ -43,9 +43,7 @@ const weatherController = async (req, res) => {
                 "data": weather_data.data
             });
         }
-        return res.render('v1/pages/latlon_weather', {
-            "data" : weather_data.data
-        });
+        return res.send(weather_data);
     }
 
     if(isNaN(counter) || counter < 1){
@@ -68,11 +66,9 @@ const weatherController = async (req, res) => {
             "data": weather_data.data
         });
     }
-    return res.render('v1/pages/weather', {
-        "data" : weather_data.data
-    });
+    return res.send(weather_data);
 };
 
 module.exports = {
-    weatherController,
+    weatherAPIController,
 };

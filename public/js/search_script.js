@@ -51,7 +51,6 @@ const searchCityResults = (search_input) => {
         }
         data.data.results.forEach((result, index) => {
             const city = result.city;
-            // console.log(result);
             const result_element = document.createElement("a");
             result_element.classList.add("search_result");
             result_element.href = `/search/?city=${data.query.city}&counter=${index+1}&timezone=${DEFAULT_TIME_ZONE}`;

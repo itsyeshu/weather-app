@@ -3,9 +3,7 @@ const Path = require('path')
 const app = express();
 
 // Routes
-const apiRoutes = require("./api/router")
-const searchRoutes = require("./routes/search")
-const weatherRoutes = require("./routes/weather")
+const Routes = require("./routes/router")
 
 // Load .env variables
 require('dotenv').config()
@@ -17,22 +15,17 @@ app.set('view engine', 'ejs');
 app.use('/public', express.static(Path.join(__dirname, 'public')))
 
 // Site //
+app.use('/', Routes);
 
-// API endpoint
-app.use('/api', apiRoutes);
-
-// Search page
-app.use('/', searchRoutes);
-
-// Weather page
-app.use('/search', weatherRoutes);
-
-// Index page
-app.get('/info', (req, res) => {
-    res.status(203).send("<h1>Home page</h1>")
-})
+// about page
+app.use(function(req, res, error) {
+    res.render('v1/pages/error_page', {
+        "error_code": "HTTP " + 404,
+        "error": "Resources not found",
+        "message": "Make sure you have entered the correct URL",
+    });
+});
 
 app.listen(8080, () => {
     console.log('Server is listening on port 8080');
 });
-

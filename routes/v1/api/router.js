@@ -1,5 +1,5 @@
 const express = require("express");
-const DEFAULT = require("./constants");
+const DEFAULT = require("../constants");
 const router = express.Router();
 
 const apiRoutes = {

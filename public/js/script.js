@@ -1,13 +1,16 @@
 "use-strict";
-var geocoder;
 const html = document.documentElement;
 const gps_button = document.getElementById("gps_button");
 const toggle_theme_button = document.getElementById("toggle_theme_button");
 const gps_info_dialog = document.getElementById("gps_info_dialog");
 
+const DB_NAME = "v1";
+const SPEED_LIST_LIMIT = 6;
+const DB_VERSION = 1;
+const OBJ_STORE_NAME = "city_label";
 const DEFAULT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
 
-var dark_theme;
+var dark_theme = "LIGHT";
 
 gps_button && gps_button.addEventListener("click", e => {
     const success_function = (e) => {
@@ -36,7 +39,15 @@ gps_button && gps_button.addEventListener("click", e => {
     main(e);
 });
 
-function change_to_theme(theme) {
+function toggle_theme(_theme) {
+    change_to_theme(_theme=="DARK"?"LIGHT":"DARK");
+}
+
+function change_to_theme(_theme) {
+    const theme = _theme=="DARK"?true:false;
+    dark_theme = _theme;
+    localStorage.setItem("dark_theme", _theme);
+
     const DARK_THEME_COLOR = "#394d56";
     const LIGHT_THEME_COLOR = "#327648";
 
@@ -44,23 +55,21 @@ function change_to_theme(theme) {
     document.querySelector("meta[name=theme-color]").setAttribute("content", theme_color);
 
     theme?html.classList.add("theme-dark"):html.classList.remove("theme-dark");
-    toggle_theme_button.setAttribute("hvr", !theme?"Light theme":"Dark theme");
-    
+
     const dark_theme_path = document.getElementById("path_dark_theme");
     const light_theme_path = document.getElementById("path_light_theme");
     const path_from = document.getElementById("path_theme");
-
-    const path_to = !theme?light_theme_path:dark_theme_path;
+    
+    const path_to = !theme?dark_theme_path:light_theme_path;
     if(path_from && path_to) path_from.setAttribute("d", path_to.getAttribute("d"));
+    toggle_theme_button.setAttribute("hvr", theme?"Switch to Light theme":"Switch to Dark theme");
 
-    dark_theme = theme;
-
-    localStorage.setItem("dark_theme", theme);
+    // console.log("Saved to localStorage : ", localStorage.getItem("dark_theme"));
+    // console.log("Changed to theme : ", theme?"Dark":"Light");
 }
 
 toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
-    dark_theme = !dark_theme;
-    change_to_theme(dark_theme);
+    toggle_theme(dark_theme);
 });
 
 function initialize() {
@@ -80,10 +89,36 @@ function initialize() {
         minute_hand.style.transform = "rotate(" + (minute / 60 * 360 + 360) + "deg)";
         second_hand.style.transform = "rotate(" + (second / 60 * 360) + "deg)";
     }
-    dark_theme = html.classList.contains("theme-dark");
+    if(localStorage.getItem("dark_theme") === null) {
+        dark_theme = html.classList.contains("theme-dark")?"DARK":"LIGHT";
+        localStorage.setItem("dark_theme", dark_theme?"DARK":"LIGHT");
+    }else{
+        dark_theme = localStorage.getItem("dark_theme");
+    }
     change_to_theme(dark_theme);
     const clocks = document.querySelectorAll(".clock");
     clocks && clocks.length && setInterval(function(){ clocks.forEach(clock => {animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })))})}, 1000);
 }
+
+const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
+    const DB_transaction = indexedDB.open(DB_NAME, DB_VERSION);
+    DB_transaction.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if(!db.objectStoreNames.contains(OBJ_STORE_NAME)){
+            objectStore = db.createObjectStore(OBJ_STORE_NAME, {keyPath: "id"});
+            objectStore.createIndex("label", "label", {unique: false});
+            objectStore.createIndex("city_name", "city_name", {unique: false});
+            objectStore.createIndex("counter", "counter", {unique: false});
+            console.log("Object store created : ", objectStore);
+        }else{
+            console.log("Object store '" + OBJ_STORE_NAME + "' already exists");
+        }
+    }
+    DB_transaction.onerror = (event) => {
+        console.log("Error : ", event.target.errorCode);
+    }
+    return DB_transaction;
+}
+
 
 window.addEventListener("DOMContentLoaded", initialize);

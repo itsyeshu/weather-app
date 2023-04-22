@@ -26,9 +26,9 @@
                                 <img src="/public/img/globe/rotating_earth_globe.gif" alt="Rotating globe">
                             </div>
                             <div>
-                                <span class="tag">Free</span>
+                                <span class="tag">Fast & private</span>
                                 <a href="https://linkedin.com/in/itsyeshu" target="_blank" class="tag special_link">Developer <span class="svg-inline"><svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="currentColor"><path d="M220 903q-27.637 0-47.319-19.681Q153 863.638 153 836V316q0-27.638 19.681-47.319Q192.363 249 220 249h257v67H220v520h520V579h67v257q0 27.638-19.681 47.319T740 903H220Zm168.5-188L341 667.5 692.5 316H568v-67h239v239h-67V363.5L388.5 715Z"></path></svg></span></a>
-                                <a href="/api" target="_blank" class="tag special_link">API doc <span class="svg-inline"><svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="currentColor"><path d="M220 903q-27.637 0-47.319-19.681Q153 863.638 153 836V316q0-27.638 19.681-47.319Q192.363 249 220 249h257v67H220v520h520V579h67v257q0 27.638-19.681 47.319T740 903H220Zm168.5-188L341 667.5 692.5 316H568v-67h239v239h-67V363.5L388.5 715Z"></path></svg></span></a>
+                                <a href="/api-docs" target="_blank" class="tag special_link">API doc <span class="svg-inline"><svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="currentColor"><path d="M220 903q-27.637 0-47.319-19.681Q153 863.638 153 836V316q0-27.638 19.681-47.319Q192.363 249 220 249h257v67H220v520h520V579h67v257q0 27.638-19.681 47.319T740 903H220Zm168.5-188L341 667.5 692.5 316H568v-67h239v239h-67V363.5L388.5 715Z"></path></svg></span></a>
                             </div>
                             <h1 class="page_title" style="max-width: 500px;">
                                 Instant Live weather & forecast for any place on the planet
@@ -60,7 +60,7 @@
                             <div class="content_box">
                                 <div class="city_card_container flex scroll-y">
                                     <% for(var i=0; i<data.length; i++){ %>
-                                        <%- include('../partials/v1/city_card', {
+                                        <%- include('../partials/city_card', {
                                             city : data[i],
                                         }); %>
                                     <% } %>
