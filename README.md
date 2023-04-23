@@ -2,15 +2,16 @@
 Get live weather updates for your city & locality
 
 ### Things you can do
-* [x] Check live weather with name of your city
-* [x] Dedicated API & Interface
+* ✅ Check live weather with name of your city
+* ✅ Dedicated API & Interface
     - Try [ [Weather API](https://weather-app.itsyeshu.me/api-docs) ]
-* [ ] All private
-* [x] Use GPS co-ordinates to get weather updates near you
-* [x] Available in different themes (Light / Dark)
-* [x] As an Open-source project, fork it, modify it, and make a pull request
+* ✅ All private
+* ✅ Use GPS co-ordinates to get weather updates near you
+* ✅ Available in different themes (Light / Dark)
+* ✅ As an Open-source project, fork it, modify it, and make a pull request
 
 
 ### Nice to haves
-* [x] Personalization
-* [x] Speed-list
+* ✅ Personalization
+* ✅ Speed-list
+* [ ]  Push notifications

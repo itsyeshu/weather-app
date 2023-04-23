@@ -4,6 +4,8 @@ const constant = {
     "DEFAULT_CITY_LIMIT" : 4,
     "DEFAULT_CITY" : "Nanded",
     "DEFAULT_LANG" : "en",
+    
+    "BULK_CITY_LIMIT" : 4,
 }
 
 

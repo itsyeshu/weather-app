@@ -69,6 +69,29 @@ const weatherAPIController = async (req, res) => {
     return res.send(weather_data);
 };
 
+const bulkWeatherAPIController = async (req, res) => {
+    const city_names = req.query.city_names.split(",").map(city => city.trim());
+    const city_counters = req.query.city_counters.split(",").map(counter => parseInt((counter+"").trim()) || 1);
+    const lang = req.query.lang || DEFAULT.DEFAULT_LANG;
+
+    const weather_data = await weatherReducer.getBulkOnlyCurrentWeatherData(city_names, city_counters, lang);
+    if(weather_data.error){
+        return res.send({
+            "status": "failed",
+            "statusCode": weather_data.statusCode,
+            "error": weather_data.error,
+            "message": weather_data.message,
+            "data": weather_data.data
+        });
+    }
+    return res.send({
+        "status": "success",
+        "statusCode": 200,
+        "data": weather_data.data
+    });
+}
+
 module.exports = {
     weatherAPIController,
+    bulkWeatherAPIController,
 };

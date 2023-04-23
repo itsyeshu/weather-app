@@ -4,16 +4,25 @@ const toggle_label = () => {
     const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
     const dialog = document.getElementById('add_speedlist_dialog');
     const label_text = document.getElementById('speedlist_label').value;
+    if(label_text.length > 20){
+        alert("Label name should be less than 20 characters");
+        return;
+    }
+    const invalid_chars = ['>', '<', '/', '\\', '?', ':', '*', '|', '"'];
+    if(label_text.split("").map(char => invalid_chars.includes(char)).includes(true)){
+        alert("Label name should not contain any of the following characters: " + invalid_chars.join(", "));
+        return;
+    }
     document.getElementById('speedlist_label').value = "";
     if(label_text === ""){
         alert("Please enter valid a label name");
-        dialog.showModal();
         return;
     }
     dialog.close();
     const label_data = {
         "id" : parseInt(label.dataset.id),
         "label" : label_text,
+        "name" : label.dataset.name,
         "city_name" : label.dataset.cityName,
         "counter" : parseInt(label.dataset.cityCounter) || 1,
     }
@@ -28,6 +37,17 @@ const toggle_label = () => {
             label.querySelector('path').setAttribute('d', 'M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z');
             label.setAttribute('hvr', 'Added to Speed-list');
             dialog.close();
+            const result_element = document.getElementById('tab_container');
+            if(result_element.children.length > 0){
+                result_element.children[0].innerHTML = `
+                    <span class="tab ">${ label_data.label }</span>
+                ` + result_element.children[0].innerHTML;
+            }else{
+                result_element.innerHTML = `
+                <div class="box_content" style="margin:calc(-0.5 * var(--signature-spacing, 12px)) 0 var(--signature-spacing, 12px) 0;">
+                    <span class="tab ">${ label_data.label }</span>
+                </div>`;
+            }
             alert("Successfully added to speed-list");
         }
     }
@@ -41,40 +61,50 @@ const open_toggle_label = () => {
     const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
     DB_transaction.onsuccess = (event) => {
         const db = event.target.result;
-        const result_all = db.transaction(OBJ_STORE_NAME, "readonly").objectStore(OBJ_STORE_NAME).getAll();
-        result_all.onsuccess = (e) => {
-            const results = e.target.result;
-            if(results.length < SPEED_LIST_LIMIT){
-                const transaction = db.transaction(OBJ_STORE_NAME, "readwrite");
-                const result = transaction.objectStore(OBJ_STORE_NAME).get(parseInt(label.dataset.id));
-                result.onsuccess = (e) => {
-                    if(e.target.result === undefined){
-                        console.log("object doesnot exist locally");
+        const transaction = db.transaction(OBJ_STORE_NAME, "readwrite");
+        const result = transaction.objectStore(OBJ_STORE_NAME).get(parseInt(label.dataset.id));
+        result.onsuccess = (e) => {
+            if(e.target.result === undefined){
+                const result_all = db.transaction(OBJ_STORE_NAME, "readonly").objectStore(OBJ_STORE_NAME).getAll();
+                result_all.onsuccess = (e) => {
+                    const results = e.target.result;
+                    if(results.length < SPEED_LIST_LIMIT){
+                        // console.log("object doesnot exist locally");
                         const dialog = document.getElementById('add_speedlist_dialog');
                         dialog.showModal();
                         const save_btn = document.getElementById('speedlist_save_btn');
                         save_btn.addEventListener('click', toggle_label);
-                    }else{
-                        console.log("object already exists")
-                        const dialog = document.getElementById('loading_dialog_remove_speedlist');
-                        dialog.showModal();
-                        const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).delete(parseInt(label.dataset.id));
-                        result.onsuccess = (e) => {
-                            console.log("object removed successfully")
-                            console.log('request.result : ', e.target);
-                            label.querySelector('path').setAttribute('d', 'M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z');
-                            label.setAttribute('hvr', 'Add to Speed-list');
-                            const dialog = document.getElementById('loading_dialog_remove_speedlist');
-                            dialog.close();
-                        }
-                        result.onerror = (e) => {
-                            console.log("Error : ", e.target.error);
-                            dialog.close();
-                        }
+                    }
+                    else{
+                        alert("You have reached the limit of speed-lists (" + SPEED_LIST_LIMIT + ").\nPlease remove some speed-lists to add more.");
                     }
                 }
             }else{
-                alert("You have reached the limit of speed-lists (" + SPEED_LIST_LIMIT + ").\nPlease remove some speed-lists to add more.");
+                // console.log("object already exists")
+                const dialog = document.getElementById('loading_dialog_remove_speedlist');
+                if(!confirm("This city is in your speed-list.\nDo you want to remove it from your speed-list?")){
+                    return;
+                }
+                dialog.showModal();
+                const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).delete(parseInt(label.dataset.id));
+                result.onsuccess = (e) => {
+                    const result_element = document.getElementById('tab_container');
+                    if(result_element.children.length > 0){
+                        if(result_element.children[0].length > 1) result_element.children[0].children[0].remove();
+                        else result_element.children[0].remove();
+                    }
+                    // console.log("object removed successfully")
+                    // console.log('request.result : ', e.target);
+                    label.querySelector('path').setAttribute('d', 'M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z');
+                    label.setAttribute('hvr', 'Add to Speed-list');
+                    const dialog = document.getElementById('loading_dialog_remove_speedlist');
+                    dialog.close();
+                    alert("Successfully removed from speed-list");
+                }
+                result.onerror = (e) => {
+                    // console.log("Error : ", e.target.error);
+                    dialog.close();
+                }
             }
         }
     }
@@ -90,14 +120,25 @@ const _init_ = () => {
         const request = objectStore.get(parseInt(label.dataset.id));
         request.onsuccess = (e) => {
             if(e.target.result === undefined){
-                console.log("object doesnot exist locally")
+                // console.log("object doesnot exist locally")
                 label.querySelector('path').setAttribute('d', 'M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z');
                 label.setAttribute('hvr', 'Add to Speed-list');
             }else{
-                console.log("object already exists")
-                console.log('request.result : ', e.target);
+                // console.log("object already exists")
+                const obj = e.target.result;
+                const result_element = document.getElementById('tab_container');
+                if(result_element.children.length > 0){
+                    result_element.children[0].innerHTML = `
+                        <span class="tab ">${ obj.label }</span>
+                    ` + result_element.children[0].innerHTML;
+                }else{
+                    result_element.innerHTML = `
+                    <div class="box_content" style="margin:calc(-0.5 * var(--signature-spacing, 12px)) 0 var(--signature-spacing, 12px) 0;">
+                        <span class="tab ">${ obj.label }</span>
+                    </div>`;
+                }
                 label.querySelector('path').setAttribute('d', 'M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z');
-                label.setAttribute('hvr', 'Added to Speed-list');
+                label.setAttribute('hvr', 'Remove from Speed-list');
             }
         }
         request.onerror = (e) => {
@@ -107,14 +148,6 @@ const _init_ = () => {
     DB_transaction.onerror = (event) => {
         console.log("Error while accessing objectStore", event.target.error);
     }
-}
-
-const add_label = () => {
-
-}
-
-const remove_label = () => {
-    
 }
 
 document.addEventListener('DOMContentLoaded', () => {

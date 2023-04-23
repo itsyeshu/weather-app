@@ -83,6 +83,34 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
 }
 
 const fetchBulkCityFromName = async (city_names, city_counters, lang=DEFAULT.DEFAULT_LANG) => {
+    if(city_names.length == 0){
+        return {
+            "status" : "failed",
+            "statusCode" : 400,
+            "error" : "Invalid request",
+            "message" : "Provided empty city names array",
+            "query" : {
+                "city": city_names,
+                "limit": city_counters,
+                "lang": lang,
+            },
+            "data" : {}
+        };
+    }
+    if(city_counters.length != city_names.length){
+        return {
+            "status" : "failed",
+            "statusCode" : 400,
+            "error" : "Invalid request",
+            "message" : `Invalid request`,
+            "query" : {
+                "city": city_names,
+                "limit": city_counters,
+                "lang": lang,
+            },
+            "data" : {}
+        };
+    }
     const promises = city_names.map((city_name, index) => fetchCitiesFromName(city_name, city_counters[index] || 1, lang));
     var results = await Promise.all(promises);
     results = results.map((el, index) => ({

@@ -4,9 +4,9 @@ const axios = require("axios")
 const DEFAULT = require("./constants");
 
 // Controllers
-const searchController = require("./search");
-const airQualityController = require("./air_quality");
-const reverseGeocodingController = require("./reverse_geocoding");
+const searchReducer = require("./search");
+const aqiReducer = require("./air_quality");
+const reverseGeocodingReducer = require("./reverse_geocoding");
 
 // API urls
 const API_URL = "https://api.open-meteo.com/v1"
@@ -18,7 +18,7 @@ const MONTH_ARRAY = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Se
 
 // API endpoints
 const GET_CURRENT_WEATHER_URI = (lat, lon, timezone, lang) => API_URL + `/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min&hourly=temperature_2m,weathercode,uv_index&current_weather=true&timezone=${timezone}&lang=${lang}`;
-const GET_ONLY_CURRENT_WEATHER_URI = (lat, lon, timezone, lang) => API_URL + `/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=${timezone}&lang=${lang}`;
+const GET_ONLY_CURRENT_WEATHER_URI = (lat, lon, lang) => API_URL + `/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&lang=${lang}`;
 
 // Helper functions
 const mappingWeatherIdToIcon = (id) => {const mapping = {0 : {"desc" : "Clear sky","icon" : "01d","icon_night" : "01n","bg" : "bg-01d","bg_night" : "bg-01n",},1 : {"desc" : "Mainly clear sky","icon" : "02d","icon_night" : "02n","bg" : "bg-02d","bg_night" : "bg-02n",},2 : {"desc" : "Partly cloudy sky","icon" : "03d","icon_night" : "03n","bg" : "bg-03d","bg_night" : "bg-03n",},3 : {"desc" : "Overcast sky","icon" : "04d","icon_night" : "04n","bg" : "bg-04d","bg_night" : "bg-04n",},45 : {"desc" : "Fog","icon" : "50d","icon_night" : "50n","bg" : "bg-50d","bg_night" : "bg-50n",},48 : {"desc" : "Depositing fog","icon" : "50d","icon_night" : "50n","bg" : "bg-50d","bg_night" : "bg-50n",},51 : {"desc" : "Light drizzle","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},53 : {"desc" : "Moderate drizzle","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},55 : {"desc" : "Dense drizzle","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},56 : {"desc" : "Freezing light drizzle","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},57 : {"desc" : "Freezing dense drizzle","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},61 : {"desc" : "Slight intensity rain","icon" : "10d","icon_night" : "10n","bg" : "bg-10d","bg_night" : "bg-10n",},63 : {"desc" : "Moderate intensity rain","icon" : "10d","icon_night" : "10n","bg" : "bg-10d","bg_night" : "bg-10n",},65 : {"desc" : "Heavy intensity rain","icon" : "10d","icon_night" : "10n","bg" : "bg-10d","bg_night" : "bg-10n",},66 : {"desc" : "Freezing light rain","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},67 : {"desc" : "Freezing heavy rain","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},71 : {"desc" : "Light snow","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},73 : {"desc" : "Moderate snow","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},75 : {"desc" : "Heavy snow","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},77 : {"desc" : "Snowfall","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},80 : {"desc" : "Light rain shower","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},81 : {"desc" : "Moderate rain shower","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},85 : {"desc" : "Slight snow shower","icon" : "13d","icon_night" : "13n","bg" : "bg-13d","bg_night" : "bg-13n",},86 : {"desc" : "Heavy snow shower","icon" : "09d","icon_night" : "09n","bg" : "bg-09d","bg_night" : "bg-09n",},95 : {"desc" : "Thunderstorm","icon" : "11d","icon_night" : "11n","bg" : "bg-11d","bg_night" : "bg-11n",},96 : {"desc" : "Thunderstorm (hail)","icon" : "11d","icon_night" : "11n","bg" : "bg-11d","bg_night" : "bg-11n",},99 : {"desc" : "Thunderstorm (Heavy hail)","icon" : "11d","icon_night" : "11n","bg" : "bg-11d","bg_night" : "bg-11n",}};return mapping[id];}
@@ -32,7 +32,7 @@ const getShortDate = (date) => {var new_date = new Date(date);return new_date.ge
 // Controller functions
 const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
     counter = Math.max(1, parseInt(counter));
-    const _cities_data = await searchController.fetchCitiesFromName(name, limit=Math.max(counter, DEFAULT.DEFAULT_CITY_LIMIT), lang);
+    const _cities_data = await searchReducer.fetchCitiesFromName(name, limit=Math.max(counter, DEFAULT.DEFAULT_CITY_LIMIT), lang);
     if(_cities_data.error){
         return {
             "status": "failed",
@@ -66,7 +66,7 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
             "data" : {},
         }
     }
-    const { data:_air_quality_index_data } = await airQualityController.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
+    const { data:_air_quality_index_data } = await aqiReducer.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
     if(_air_quality_index_data.error){
         return {
             "status": "failed",
@@ -83,10 +83,12 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
     weather_data.hourly_units.winddirection_10m = "°";
 
     const tabs = [];
-    if(id == 1261977) tabs.push({
-        "tab" : "Hometown",
-        "class" : "",
-    });
+
+    // My city Nanded's tab as "Hometown"
+    // if(id == 1261977) tabs.push({
+    //     "tab" : "Hometown",
+    //     "class" : "",
+    // });
     if(Math.round(weather_data.current_weather.temperature) > 40) tabs.push({
         "tab" : "Stay home, intense heat!!",
         "class" : "tab_alert",
@@ -168,7 +170,7 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
 }
 
 const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
-    var cities_data = await searchController.fetchCitiesFromName(name, counter, timezone, lang);
+    var cities_data = await searchReducer.fetchCitiesFromName(name, counter, timezone, lang);
     if(cities_data.error){
         return {
             "status" : "failed",
@@ -223,7 +225,7 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
             "message": e.message,
         }
     }
-    const { data:_air_quality_index_data } = await airQualityController.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
+    const { data:_air_quality_index_data } = await aqiReducer.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
 
     if(_air_quality_index_data.error){
         return {
@@ -237,7 +239,7 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
 
     const air_quality_index_data = _air_quality_index_data.data;
 
-    const _cities_data = await reverseGeocodingController.getCityByLatLon(lat, lon, lang);
+    const _cities_data = await reverseGeocodingReducer.getCityByLatLon(lat, lon, lang);
     if(_cities_data.error){
         return {
             "status" : "failed",
@@ -262,8 +264,8 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
     });
 
     const data = {
-        "lat" : new Number(lat),
-        "lon" : new Number(lon),
+        "lat" : new Number(city.lat),
+        "lon" : new Number(city.lon),
         "city_name" : city.name,
         "city" : city.city,
         "tabs" : tabs,
@@ -334,9 +336,9 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
     };
 }
 
-const getOnlyCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
+const getOnlyCurrentWeatherDataByLatLon = async (lat, lon, lang=DEFAULT.DEFAULT_LANG) => {
     try{
-        var data = await axios.get(GET_ONLY_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
+        var data = await axios.get(GET_ONLY_CURRENT_WEATHER_URI(lat, lon, lang));
     } catch(err){
         return {
             "status" : "failed",
@@ -346,6 +348,13 @@ const getOnlyCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DE
             "data" : {}
         }
     }
+    data.data.tabs = [];
+    if(data.data.current_weather.temperature > 40){
+        data.data.tabs.push({
+            "name" : "Stay home, intense heat",
+            "class" : "tab_alert",
+        });
+    }
     return {
         "status" : "success",
         "statusCode": 200,
@@ -353,22 +362,34 @@ const getOnlyCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DE
     };
 }
 
-const getBulkOnlyCurrentWeatherData = async (city_names, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
-    const cities_data = await searchController.fetchBulkCityFromName(city_names.map(city => city.name), city_names.map(city => city.counter || 1), timezone, lang);
+const getBulkOnlyCurrentWeatherData = async (city_names, city_counters, lang=DEFAULT.DEFAULT_LANG) => {
+    const cities_data = await searchReducer.fetchBulkCityFromName(city_names, city_counters, lang);
     if(cities_data.error){
         return {
             "status" : "failed",
             "statusCode" : cities_data.statusCode,
             "error" : cities_data.error,
             "message" : cities_data.message,
+            "query" : cities_data.query,
             "data" : {}
         }
     }
+
+    if(city_names.length > DEFAULT.BULK_CITY_LIMIT){
+        return {
+            "status" : "failed",
+            "statusCode" : 400,
+            "error" : "Bad request",
+            "message" : "Bulk city limit (" + DEFAULT.BULK_CITY_LIMIT + ") exceeded",
+            "query" : city_names,
+            "data" : {}
+        }
+    }
+
     try{
-        var bulk_weather_promises = cities_data.data.results.map(city => getOnlyCurrentWeatherDataByLatLon(city.lat, city.lon, timezone, lang));
+        var bulk_weather_promises = cities_data.data.results.map(city => getOnlyCurrentWeatherDataByLatLon(city.lat, city.lon, lang));
         var bulk_weather_data = await Promise.all(bulk_weather_promises);
         bulk_weather_data = bulk_weather_data.map(el => el.data);
-        
         const results = []
         for(let i=0; i<bulk_weather_data.length; i++){
             results.push({
@@ -376,6 +397,7 @@ const getBulkOnlyCurrentWeatherData = async (city_names, timezone = DEFAULT.DEFA
                 "lat" : bulk_weather_data[i].latitude,
                 "lon" : bulk_weather_data[i].longitude,
                 "name" : cities_data.data.results[i].name,
+                "tabs" : bulk_weather_data[i].tabs,
                 "query" : {
                     "city" : cities_data.data.results[i].query_name,
                     "counter" : cities_data.data.results[i].query_counter,

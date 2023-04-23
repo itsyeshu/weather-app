@@ -4,9 +4,10 @@ const gps_button = document.getElementById("gps_button");
 const toggle_theme_button = document.getElementById("toggle_theme_button");
 const gps_info_dialog = document.getElementById("gps_info_dialog");
 
+const SPEED_LIST_LIMIT = 4;
+
 const DB_NAME = "v1";
-const SPEED_LIST_LIMIT = 6;
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const OBJ_STORE_NAME = "city_label";
 const DEFAULT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
 
@@ -73,6 +74,13 @@ toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
 });
 
 function initialize() {
+    if(localStorage.getItem("dark_theme") === null) {
+        dark_theme = html.classList.contains("theme-dark")?"DARK":"LIGHT";
+        localStorage.setItem("dark_theme", dark_theme?"DARK":"LIGHT");
+    }else{
+        dark_theme = localStorage.getItem("dark_theme");
+    }
+    change_to_theme(dark_theme);
     const animate_clock = (clock, date) =>{
         const [second_hand, minute_hand, hour_hand] = clock.querySelectorAll(".clock_hand");
         const second = date.getSeconds();
@@ -89,30 +97,27 @@ function initialize() {
         minute_hand.style.transform = "rotate(" + (minute / 60 * 360 + 360) + "deg)";
         second_hand.style.transform = "rotate(" + (second / 60 * 360) + "deg)";
     }
-    if(localStorage.getItem("dark_theme") === null) {
-        dark_theme = html.classList.contains("theme-dark")?"DARK":"LIGHT";
-        localStorage.setItem("dark_theme", dark_theme?"DARK":"LIGHT");
-    }else{
-        dark_theme = localStorage.getItem("dark_theme");
-    }
-    change_to_theme(dark_theme);
     const clocks = document.querySelectorAll(".clock");
     clocks && clocks.length && setInterval(function(){ clocks.forEach(clock => {animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })))})}, 1000);
+    setTimeout(
+        ()=>{html.classList.add("loaded")}, 1000
+    )
 }
 
 const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
     const DB_transaction = indexedDB.open(DB_NAME, DB_VERSION);
     DB_transaction.onupgradeneeded = (event) => {
         const db = event.target.result;
-        if(!db.objectStoreNames.contains(OBJ_STORE_NAME)){
-            objectStore = db.createObjectStore(OBJ_STORE_NAME, {keyPath: "id"});
-            objectStore.createIndex("label", "label", {unique: false});
-            objectStore.createIndex("city_name", "city_name", {unique: false});
-            objectStore.createIndex("counter", "counter", {unique: false});
-            console.log("Object store created : ", objectStore);
-        }else{
+        if(db.objectStoreNames.contains(OBJ_STORE_NAME)){
             console.log("Object store '" + OBJ_STORE_NAME + "' already exists");
+            db.deleteObjectStore(OBJ_STORE_NAME);
         }
+        objectStore = db.createObjectStore(OBJ_STORE_NAME, {keyPath: "id"});
+        objectStore.createIndex("label", "label", {unique: false});
+        objectStore.createIndex("name", "name", {unique: false});
+        objectStore.createIndex("city_name", "city_name", {unique: false});
+        objectStore.createIndex("counter", "counter", {unique: false});
+        console.log("Object store created : ", objectStore);
     }
     DB_transaction.onerror = (event) => {
         console.log("Error : ", event.target.errorCode);
