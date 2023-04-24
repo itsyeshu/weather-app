@@ -22,7 +22,7 @@ const searchAPIController = async (req, res) => {
     }
     const lang = req.query.lang;
     const limit = parseInt(req.query.limit) || DEFAULT.DEFAULT_CITY_LIMIT;
-    if (isNaN(limit) || limit < 1){
+    if (limit < 1){
         return res.status(200).send({
             "status": "failed",
             "statusCode": 400,

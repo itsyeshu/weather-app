@@ -72,8 +72,8 @@ const fetchCurrentAirQuality = async (lat, lon, start_date, end_date, timezone=D
         }
     }
     const data = {
-        "lat" : Math.round(air_quality_data.latitude * 10000) / 10000,
-        "lon" : Math.round(air_quality_data.longitude * 10000) / 10000,
+        "lat" : DEFAULT.round(air_quality_data.latitude),
+        "lon" : DEFAULT.round(air_quality_data.longitude),
         "start_date" : air_quality_data.hourly.time[0].split("T")[0],
         "end_date" : air_quality_data.hourly.time[air_quality_data.hourly.time.length-1].split("T")[0],
         "timezone" : {
@@ -134,8 +134,8 @@ const fetchCurrentAirQualityIndex = async (lat, lon, date, timezone=DEFAULT.DEFA
         "status" : "success",
         "statusCode" : 200,
         "data" : {
-            "lat" : air_quality_data.lat,
-            "lon" : air_quality_data.lon,
+            "lat" : DEFAULT.round(air_quality_data.lat),
+            "lon" : DEFAULT.round(air_quality_data.lon),
             "start_date" : air_quality_data.start_date,
             "end_date" : air_quality_data.end_date,
             "timezone" : air_quality_data.timezone,

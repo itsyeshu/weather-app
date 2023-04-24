@@ -32,6 +32,7 @@
     --light-input-border-color-focus : #989898;
     --light-input-background-color : transparent;
     --light-input-font-color : var(--light-font-color, #3e3e3e);
+    --light-whatsapp-fill-color: #103928;
 
     /* Dark */
     --dark-background-color : #263238;
@@ -61,6 +62,7 @@
     --dark-input-border-color-focus : #c5c5c5;
     --dark-input-background-color : transparent;
     --dark-input-font-color : var(--dark-font-color, #fefefe);
+    --dark-whatsapp-fill-color: #25d366;
 
     --border-radius-for-box : 8px;
     --border-radius-small : 4px;
@@ -110,6 +112,8 @@ html{
     --input-border-color-focus : var(--light-input-border-color-focus, #3f51b5);
     --input-background-color : var(--light-input-background-color, rgba(20,20,20,0.08));
     --input-font-color : var(--light-input-font-color, #3e3e3e);
+
+    --whatsapp-fill-color : var(--light-whatsapp-fill-color, #103928);
 }
 html.theme-dark{
     --background-color : var(--dark-background-color , #263238);
@@ -140,10 +144,11 @@ html.theme-dark{
     --input-background-color : var(--dark-input-background-color, rgba(20,20,20,0.08));
     --input-font-color : var(--dark-input-font-color, #f3f3f3);
 
-    --transition-time : 0.3s;
+    --whatsapp-fill-color : var(--dark-whatsapp-fill-color, #25d366);
 
 }
 
 html.loaded{
+    --transition-time : 0.23s;
     transition: var(--transition-time, 0.3s) all ease-in-out;
 }

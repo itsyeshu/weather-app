@@ -28,8 +28,8 @@ const getCityByLatLon = async (lat, lon, lang=DEFAULT.DEFAULT_LANG) => {
     const features = data.features.filter(city => city.properties.result_type != 'unknown').map(city => {
         const city_name = city.properties.state_district || city.properties.city || city.properties.county;
         return {
-            "lat" : Math.round(city.properties.lat * 1000) / 1000,
-            "lon" : Math.round(city.properties.lon * 1000) / 1000,
+            "lat" : DEFAULT.round(city.properties.lat),
+            "lon" : DEFAULT.round(city.properties.lon),
             "name" : city_name,
             "city" : {
                 "city" : city_name,

@@ -6,9 +6,9 @@ const gps_info_dialog = document.getElementById("gps_info_dialog");
 
 const SPEED_LIST_LIMIT = 4;
 
-const DB_NAME = "v1";
+const DB_NAME = "speed_list";
 const DB_VERSION = 2;
-const OBJ_STORE_NAME = "city_label";
+const OBJ_STORE_NAME = "v1";
 const DEFAULT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
 
 var dark_theme = "LIGHT";
@@ -112,9 +112,15 @@ const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
             console.log("Object store '" + OBJ_STORE_NAME + "' already exists");
             db.deleteObjectStore(OBJ_STORE_NAME);
         }
-        objectStore = db.createObjectStore(OBJ_STORE_NAME, {keyPath: "id"});
+        if(db.objectStoreNames.contains("city_label")){
+            console.log("Object store '" + "city_label" + "' already exists");
+            db.deleteObjectStore("city_label");
+        }
+        objectStore = db.createObjectStore(OBJ_STORE_NAME, {keyPath: "timestamp"});
+        objectStore.createIndex("id", "id", {unique: true});
         objectStore.createIndex("label", "label", {unique: false});
         objectStore.createIndex("name", "name", {unique: false});
+        objectStore.createIndex("timestamp", "timestamp", {unique: true});
         objectStore.createIndex("city_name", "city_name", {unique: false});
         objectStore.createIndex("counter", "counter", {unique: false});
         console.log("Object store created : ", objectStore);

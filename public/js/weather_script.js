@@ -1,60 +1,69 @@
 const label = document.getElementById('add_label');
 
 const toggle_label = () => {
-    const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
-    const dialog = document.getElementById('add_speedlist_dialog');
-    const label_text = document.getElementById('speedlist_label').value;
-    if(label_text.length > 20){
+    let dialog = document.getElementById('add_speedlist_dialog');
+    const label_text = document.getElementById('speedlist_label');
+    label_text.select();
+    label_text.focus();
+    if(label_text.value.trim().length > 20){
         alert("Label name should be less than 20 characters");
+        label_text.focus();
         return;
     }
-    const invalid_chars = ['>', '<', '/', '\\', '?', ':', '*', '|', '"'];
-    if(label_text.split("").map(char => invalid_chars.includes(char)).includes(true)){
+    const invalid_chars = ['>', '<', '/'];
+    if(label_text.value.trim().split("").map(char => invalid_chars.includes(char)).includes(true)){
         alert("Label name should not contain any of the following characters: " + invalid_chars.join(", "));
+        label_text.focus();
         return;
     }
-    document.getElementById('speedlist_label').value = "";
-    if(label_text === ""){
-        alert("Please enter valid a label name");
+    if(label_text.value.trim() === ""){
+        alert("Label name cannot be empty!");
         return;
     }
     dialog.close();
     const label_data = {
         "id" : parseInt(label.dataset.id),
-        "label" : label_text,
+        "timestamp" : new Date().getTime(),
         "name" : label.dataset.name,
+        "label" : label_text.value.trim(),
         "city_name" : label.dataset.cityName,
         "counter" : parseInt(label.dataset.cityCounter) || 1,
     }
-    DB_transaction.onsuccess = (event) => {
-        const db = event.target.result;
-        const dialog = document.getElementById('loading_dialog_add_speedlist');
-        dialog.showModal();
-        const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).add(label_data);
-        result.onsuccess = (e) => {
-            console.log("object added successfully")
-            console.log('request.result : ', e.target);
-            label.querySelector('path').setAttribute('d', 'M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z');
-            label.setAttribute('hvr', 'Added to Speed-list');
-            dialog.close();
-            const result_element = document.getElementById('tab_container');
-            if(result_element.children.length > 0){
-                result_element.children[0].innerHTML = `
-                    <span class="tab ">${ label_data.label }</span>
-                ` + result_element.children[0].innerHTML;
-            }else{
-                result_element.innerHTML = `
-                <div class="box_content" style="margin:calc(-0.5 * var(--signature-spacing, 12px)) 0 var(--signature-spacing, 12px) 0;">
-                    <span class="tab ">${ label_data.label }</span>
-                </div>`;
+    label_text.value = "";
+
+    dialog = document.getElementById('loading_dialog_add_speedlist');
+    dialog.showModal();
+    setTimeout(()=>{
+        const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
+        DB_transaction.onsuccess = (event) => {
+            const db = event.target.result;
+            const dialog = document.getElementById('loading_dialog_add_speedlist');
+
+            const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).add(label_data);
+            result.onsuccess = (e) => {
+                console.log("object added successfully")
+                console.log('request.result : ', e.target);
+                label.querySelector('path').setAttribute('d', 'M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z');
+                label.setAttribute('hvr', 'Added to Speed-list');
+                dialog.close();
+                const result_element = document.getElementById('tab_container');
+                if(result_element.children.length > 0){
+                    result_element.children[0].innerHTML = `
+                        <span class="tab ">${ label_data.label }</span>
+                    ` + result_element.children[0].innerHTML;
+                }else{
+                    result_element.innerHTML = `
+                    <div class="box_content" style="margin:calc(-0.5 * var(--signature-spacing, 12px)) 0 var(--signature-spacing, 12px) 0;">
+                        <span class="tab ">${ label_data.label }</span>
+                    </div>`;
+                }
             }
-            alert("Successfully added to speed-list");
         }
-    }
-    DB_transaction.onerror = () => {
-        const dialog = document.getElementById('error_dialog');
-        dialog.showModal();
-    }
+        DB_transaction.onerror = () => {
+            const dialog = document.getElementById('error_dialog');
+            dialog.showModal();
+        }
+    }, 1200);
 }
 
 const open_toggle_label = () => {
@@ -62,8 +71,8 @@ const open_toggle_label = () => {
     DB_transaction.onsuccess = (event) => {
         const db = event.target.result;
         const transaction = db.transaction(OBJ_STORE_NAME, "readwrite");
-        const result = transaction.objectStore(OBJ_STORE_NAME).get(parseInt(label.dataset.id));
-        result.onsuccess = (e) => {
+        const request = transaction.objectStore(OBJ_STORE_NAME).index("id").get(parseInt(label.dataset.id));
+        request.onsuccess = (e) => {
             if(e.target.result === undefined){
                 const result_all = db.transaction(OBJ_STORE_NAME, "readonly").objectStore(OBJ_STORE_NAME).getAll();
                 result_all.onsuccess = (e) => {
@@ -86,20 +95,21 @@ const open_toggle_label = () => {
                     return;
                 }
                 dialog.showModal();
-                const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).delete(parseInt(label.dataset.id));
+                const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).delete(e.target.result.timestamp);
                 result.onsuccess = (e) => {
-                    const result_element = document.getElementById('tab_container');
-                    if(result_element.children.length > 0){
-                        if(result_element.children[0].length > 1) result_element.children[0].children[0].remove();
-                        else result_element.children[0].remove();
-                    }
-                    // console.log("object removed successfully")
-                    // console.log('request.result : ', e.target);
-                    label.querySelector('path').setAttribute('d', 'M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z');
-                    label.setAttribute('hvr', 'Add to Speed-list');
-                    const dialog = document.getElementById('loading_dialog_remove_speedlist');
-                    dialog.close();
-                    alert("Successfully removed from speed-list");
+                    setTimeout(()=>{
+                        const result_element = document.getElementById('tab_container');
+                        if(result_element.children.length > 0){
+                            if(result_element.children[0].length > 1) result_element.children[0].children[0].remove();
+                            else result_element.children[0].remove();
+                        }
+                        // console.log("object removed successfully")
+                        // console.log('request.result : ', e.target);
+                        label.querySelector('path').setAttribute('d', 'M15 19H3l4.5-7L3 5h12c.65 0 1.26.31 1.63.84L21 12l-4.37 6.16c-.37.52-.98.84-1.63.84zm-8.5-2H15l3.5-5L15 7H6.5l3.5 5-3.5 5z');
+                        label.setAttribute('hvr', 'Add to Speed-list');
+                        const dialog = document.getElementById('loading_dialog_remove_speedlist');
+                        dialog.close();
+                    }, 1000);
                 }
                 result.onerror = (e) => {
                     // console.log("Error : ", e.target.error);
@@ -117,7 +127,7 @@ const _init_ = () => {
     DB_transaction.onsuccess = (event) => {
         const db = event.target.result;
         const objectStore = db.transaction(OBJ_STORE_NAME, "readonly").objectStore(OBJ_STORE_NAME);
-        const request = objectStore.get(parseInt(label.dataset.id));
+        const request = objectStore.index("id").get(parseInt(label.dataset.id));
         request.onsuccess = (e) => {
             if(e.target.result === undefined){
                 // console.log("object doesnot exist locally")

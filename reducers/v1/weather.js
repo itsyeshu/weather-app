@@ -57,12 +57,12 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
 
     try{
         var { data:weather_data } = await axios.get(GET_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
-    }catch(e){
+    }catch(err){
         return {
             "status" : "failed",
             "statusCode": 500,
             "error": "Internal server error",
-            "message": e.message,
+            "message": err.message,
             "data" : {},
         }
     }
@@ -96,8 +96,8 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
 
     const data = {
         "id" : id,
-        "lat" : lat,
-        "lon" : lon,
+        "lat" : DEFAULT.round(lat),
+        "lon" : DEFAULT.round(lon),
         "city_name" : city.name,
         "city" : city,
         "tabs" : tabs,
@@ -202,7 +202,7 @@ const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.D
             "status" : "failed",
             "statusCode": 500,
             "error": "Internal server error",
-            "message": e.message,
+            "message": err.message,
             "data" : {}
         }
     }
@@ -222,7 +222,7 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
             "status" : "failed",
             "statusCode": 500,
             "error": "Internal server error",
-            "message": e.message,
+            "message": err.message,
         }
     }
     const { data:_air_quality_index_data } = await aqiReducer.fetchCurrentAirQualityIndex(lat, lon, date=weather_data.current_weather.time.split("T")[0], timezone);
@@ -264,8 +264,8 @@ const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAUL
     });
 
     const data = {
-        "lat" : new Number(city.lat),
-        "lon" : new Number(city.lon),
+        "lat" : DEFAULT.round(city.lat),
+        "lon" : DEFAULT.round(city.lon),
         "city_name" : city.name,
         "city" : city.city,
         "tabs" : tabs,
@@ -344,7 +344,7 @@ const getOnlyCurrentWeatherDataByLatLon = async (lat, lon, lang=DEFAULT.DEFAULT_
             "status" : "failed",
             "statusCode": 500,
             "error": "Internal server error",
-            "message": e.message,
+            "message": err.message,
             "data" : {}
         }
     }
@@ -394,8 +394,8 @@ const getBulkOnlyCurrentWeatherData = async (city_names, city_counters, lang=DEF
         for(let i=0; i<bulk_weather_data.length; i++){
             results.push({
                 "id" : cities_data.data.results[i].id,
-                "lat" : bulk_weather_data[i].latitude,
-                "lon" : bulk_weather_data[i].longitude,
+                "lat" : DEFAULT.round(bulk_weather_data[i].latitude),
+                "lon" : DEFAULT.round(bulk_weather_data[i].longitude),
                 "name" : cities_data.data.results[i].name,
                 "tabs" : bulk_weather_data[i].tabs,
                 "query" : {
@@ -438,4 +438,5 @@ module.exports = {
     getCurrentWeatherData,
     getCurrentWeatherDataByLatLon,
     getBulkOnlyCurrentWeatherData,
+    getOnlyCurrentWeatherDataByLatLon,
 }

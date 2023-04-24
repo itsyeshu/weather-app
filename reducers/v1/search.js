@@ -7,9 +7,35 @@ const GEO_API_URL = "https://geocoding-api.open-meteo.com/v1";
 const GET_CITY_ID_URI = (name, limit, lang) => GEO_API_URL + `/search?name=${name}&count=${limit}&language=${lang}&format=json`;
 
 // Helper functions
-const clean_name = name => name.toLowerCase();
-const clean_limit = limit => limit||DEFAULT.DEFAULT_CITY_LIMIT;
-const clean_lang = lang => lang||DEFAULT.DEFAULT_LANG;
+const clean_name = name => {
+    if(name == undefined || name == null || name == ""){
+        throw new Error("City name is required");
+    }
+    if(name.length > 20){
+        throw new Error("City name is too long");
+    }
+    if(name.match(/[^a-zA-Z0-9 ,]/)){
+        throw new Error("City name is invalid");
+    }
+    return name.trim();
+};
+const clean_limit = limit => {
+    limit = limit||DEFAULT.DEFAULT_CITY_LIMIT;
+    if(limit < 1){
+        throw new Error("Limit must be postive integer");
+    }
+    if(limit > DEFAULT.MAX_CITY_LIMIT){
+        throw new Error("Limit must be less than " + DEFAULT.MAX_CITY_LIMIT);
+    }
+    return limit;
+};
+const clean_lang = lang => {
+    lang = lang || DEFAULT.DEFAULT_LANG;
+    if(!DEFAULT.SUPPORTED_LANGS.includes(lang)){
+        throw new Error("Language not supported");
+    }
+    return lang;
+};
 const country2flag = countryCode => (countryCode.replace(/./g, function(letter) {return String.fromCodePoint(letter.charCodeAt(0) % 32 + 0x1F1E5);}));
 
 const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, lang=DEFAULT.DEFAULT_LANG) => {
@@ -20,13 +46,19 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
     // @param lang: Language of the results
     //
     // @return: Array of city objects
+
     try{
-        var { data:city_data } = await axios.get(GET_CITY_ID_URI(clean_name(city_name), clean_limit(limit), clean_lang(lang)));
+        city_name = clean_name(city_name);
+        limit = clean_limit(limit);
+        lang = clean_lang(lang);
+
+        var { data:city_data } = await axios.get(GET_CITY_ID_URI(city_name.toLowerCase(), limit, lang));
     }catch(e){
+        console.log(e);
         return {
             "status" : "failed",
             "statusCode" : 500,
-            "error" : "Error fetching city from name",
+            "error" : "Error fetching cities from name",
             "message" : e.message,
             "query" : {
                 "city": city_name,
@@ -45,7 +77,7 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
             "status" : "failed",
             "statusCode" : 404,
             "error" : "City not found",
-            "message" : `City with name "${city_name}" not found`,
+            "message" : "City with name '" + city_name + "' not found",
             "query" : {
                 "city": city_name,
                 "lang": lang,
@@ -56,8 +88,8 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
         };
     const city_array = city_data.results.map(i=>({
         "id" : i.id,
-        "lat" : Math.round(i.latitude * 10000) / 10000,
-        "lon" : Math.round(i.longitude * 10000) / 10000,
+        "lat" : DEFAULT.round(i.latitude),
+        "lon" : DEFAULT.round(i.longitude),
         "city" : {
             "name" : i.name,
             "country_flag" : country2flag(i.country_code),
@@ -127,8 +159,8 @@ const fetchBulkCityFromName = async (city_names, city_counters, lang=DEFAULT.DEF
         const city_data = city.data.results[city.data.results.length - 1];
         return {
             "id" : city_data.id,
-            "lat" : city_data.lat,
-            "lon" : city_data.lon,
+            "lat" : DEFAULT.round(city_data.lat),
+            "lon" : DEFAULT.round(city_data.lon),
             "name" : city_data.city.name,
             "query_name" : city.query.city,
             "query_counter" : city.counter,

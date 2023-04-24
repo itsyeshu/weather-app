@@ -21,22 +21,25 @@ const searchCityResults = (search_input) => {
         }
     }
 
-    const parseData = (data) => {
-        const results_element = document.getElementById("search_results_cont");
+    const parseData = (results_element, data) => {
+        if(!data.error){
         results_element.innerHTML = `
             <div class="box_content" style="margin: calc(-0.5 * var(--signature-spacing, 12px)) 0 calc(0.5 * var(--signature-spacing, 12px)) 0;"><span style="width:auto;white-space: nowrap;margin-right: calc(0.5 * var(--signature-spacing, 12px));font-size: 11px;">Results for '${data.query.city}' (${data.count})</span></div>
-        `;
+        `;}
         const getCountryFlagUrl = (country_code) => `https://open-meteo.com/images/country-flags/${country_code.toLowerCase()}.svg`;
         if(data.error){
             const result_element = document.createElement("div");
+            results_element.innerHTML = "";
             result_element.classList.add("search_result");
+            result_element.style = "pointer-events: none;";
             result_element.innerHTML = `
-            <div class="city_box">
+            <div class="city_box flex">
                 <div class="city_name_box flex_grow">
-                    <h2>
-                        Error : ${data.error}
-                    </h2>
+                    <h2>${data.error}</h2>
                     <p class="simpl_p">${data.message}</p>
+                </div>
+                <div class="weather_icon" style="background:transparent;margin-left:var(--signature-spacing, 12px);">
+                    <img src="/public/img/error.gif" alt="Error occured">
                 </div>
             </div>`;
             results_element.appendChild(result_element);
@@ -59,25 +62,42 @@ const searchCityResults = (search_input) => {
             // if(index == 0) setTimeout(result_element.focus(), 1000); // Interrupts typing
         });
     }
+    const addLoading = (el, city_name) => {
+        el.innerHTML = "";
+        const loading = document.createElement("div");
+        loading.classList.add("search_result");
+        loading.style = "pointer-events: none;";
+        loading.innerHTML = `
+            <div class="city_name_box">
+                <h2>
+                    Loading 
+                    <span><img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;"></span>
+                </h2>
+                <p class="simpl_p">Loading cities with name "${city_name}"</p>
+            </div>`;
+        el.appendChild(loading);
+    }
+    const sanitizeName = (name) => name.replace(/[^a-zA-Z0-9 ]/g, "").trim();
     const main = async (name) => {
-        if(name)
-        {
-            const results = await searchCity(encodeURIComponent(name));
-            parseData(results);
+        name = sanitizeName(name);
+        if(name){
+            const el = document.getElementById("search_results_cont");
+            addLoading(el, name);
+            const results = await searchCity(name);
+            parseData(el, results);
         }else{
             const results_element = document.getElementById("search_results_cont");
             results_element.innerHTML = "";
         }
     }
     if(search_timeout) clearTimeout(search_timeout);
-    
-    search_timeout = setTimeout(()=>{main(search_input)}, 300);
+    search_timeout = setTimeout(()=>{main(search_input)}, 200);
 }
 
-search_input && search_input.addEventListener("input", e => {
+search_input && ["input"].forEach(eventType => search_input.addEventListener(eventType, e => {
     const search_input = e.target.value;
     searchCityResults(search_input);
-});
+}));
 
 const bulkSearchCityResults = (inputs) => {
     console.log(inputs);
@@ -142,11 +162,11 @@ const bulkSearchCityResults = (inputs) => {
                 </a>
             </div>
             <div class="flex" style="margin-top:12px;">
-                <a href="/search/?city=${ city.query.city }&counter=${ city.query.counter }&timezone=${ DEFAULT_TIME_ZONE }" class="btn_sq btn_48 btn_opt" style="border-radius:24px;padding:10px;background:var(--header-background-color);color:var(--header-font-color);">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor"><path xmlns="http://www.w3.org/2000/svg" d="M9,5v2h6.59L4,18.59L5.41,20L17,8.41V15h2V5H9z"/></svg>
+                <a href="/search/?city=${ city.query.city }&counter=${ city.query.counter }&timezone=${ DEFAULT_TIME_ZONE }" class="btn_sq btn_opt" style="background:var(--header-background-color);fill:var(--header-font-color);">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path xmlns="http://www.w3.org/2000/svg" d="M9,5v2h6.59L4,18.59L5.41,20L17,8.41V15h2V5H9z"/></svg>
                 </a>
-                <span style="margin-inline:8px;">&bullet;</span>
-                <button class="simpl_btn btn_sq btn_opt remove_speedlist" data-id="${ city.id }">
+                <hr class="vr_90" style=" width: 0; height: 24px; margin-left: 8px; padding-left: 8px; " />
+                <button class="simpl_btn btn_sq btn_opt remove_speedlist hvr" hvr="Remove from Speed-list" data-id="${ city.id }">
                     <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="22px" style="padding:1px;"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg>
                 </button>
             </div>
@@ -154,9 +174,8 @@ const bulkSearchCityResults = (inputs) => {
         `));
         if(results_element)results_element.innerHTML = innerHTML.join("");
         const remove_btns = document.getElementsByClassName("remove_speedlist");
-        for(var btn of remove_btns){
-            // console.log(btn);
-            btn.addEventListener("click", (e) => {
+        for(let btn of remove_btns){
+            btn.addEventListener("click", e => {
                 const id = parseInt(btn.dataset.id);
                 if(!confirm("Are you sure you want to remove this city from your speedlist?", "Remove City")){
                     return;
@@ -166,47 +185,64 @@ const bulkSearchCityResults = (inputs) => {
                     const db = e.target.result;
                     const transaction = db.transaction(OBJ_STORE_NAME, "readwrite");
                     const store = transaction.objectStore(OBJ_STORE_NAME);
-                    console.log(id);
-                    const request = store.delete(id);
+                    const request = store.index("id").get(id);
+                    // console.log(request);
                     request.onsuccess = (e) => {
-                        btn.parentNode.parentNode.remove();
-                        if(results_element.children.length == 0){
-                            results_element.innerHTML = `
-                            <div class="city_card">
-                                <div class="city_card_cont">
-                                    <div class="city_card_main_cont">
-                                        <div class="box_container hvr">
-                                            <div class="city_box flex box_content">
-                                                <div class="city_name_box flex_grow">
-                                                    <h2>
-                                                        List is empty
-                                                    </h2>
-                                                    <p class="simpl_p">
-                                                        Search & add a city to get started
-                                                    </p>
+                        const speed_list_data = e.target.result;
+                        // console.log(speed_list_data);
+                        const delete_request = store.delete(speed_list_data.timestamp);
+                        delete_request.onsuccess = (e) => {
+                            btn.parentNode.parentNode.remove();
+                            if(results_element.children.length == 0){
+                                results_element.innerHTML = `
+                                <div class="city_card">
+                                    <div class="city_card_cont">
+                                        <div class="city_card_main_cont">
+                                            <div class="box_container hvr">
+                                                <div class="city_box flex box_content">
+                                                    <div class="city_name_box flex_grow">
+                                                        <h2>
+                                                            List is empty
+                                                        </h2>
+                                                        <p class="simpl_p">
+                                                            Search & add a city to get started
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="box_content flex">
-                                            <div class="temperature_box flex flex_grow">
-                                                <div class="main_temp">
-                                                    <h1 style="height:64px;width:64px;text-align:center;font-style:italic;opacity:0.6;">!!!!</h1>
+                                            <div class="box_content flex">
+                                                <div class="temperature_box flex flex_grow">
+                                                    <div class="main_temp">
+                                                        <h1 style="height:64px;width:64px;text-align:center;font-style:italic;opacity:0.6;">!!!!</h1>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="weather_icon" title="Loading ..." style="padding: 14px;box-sizing: border-box;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 0 24 24" width="32px" fill="currentColor"><path xmlns="http://www.w3.org/2000/svg" d="M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z"></path>
-                                                </svg>
+                                                <div class="weather_icon" title="Loading ..." style="padding: 14px;box-sizing: border-box;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 0 24 24" width="32px" fill="currentColor"><path xmlns="http://www.w3.org/2000/svg" d="M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z"></path>
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            `;
+                                `;
+                            }
+                            alert("City removed from speedlist", "Success");
                         }
-                        alert("City removed from speedlist", "Success");
+                        delete_request.onerror = (e) => {
+                            console.log(e.error);
+                            alert("Failed to remove city from speedlist", "Error");
+                        }
+                    }
+                    request.onerror = (e) => {
+                        console.log(e.error);
+                        alert("Failed to remove city from speedlist", "Error");
                     }
                 }
-            });
+                DB_transaction.onerror = (e) => {
+                    console.log(e.error);
+                    alert("Failed to remove city from speedlist", "Error");
+                }
+            }, );
         }
     }).catch(e => {
         console.log(e);
@@ -253,7 +289,7 @@ const initialLoad = () => {
                                 <div class="box_content flex">
                                     <div class="temperature_box flex flex_grow">
                                         <div class="main_temp">
-                                            <div style="height:64px;width:64px;"></div>
+                                            <div style="height:60px;width:64px;"></div>
                                         </div>
                                         <div class="main_temp_scales">
                                             <div class="main_temp_overlay"></div>
@@ -267,9 +303,9 @@ const initialLoad = () => {
                             </div>
                         </div>
                         <div class="flex" style="margin-top:12px;">
-                            <div class="btn_sq btn_opt btn_48" style="background:var(--header-background-color);"></div>
-                            <span style="margin-inline:8px;">&bullet;</span>
-                            <div class="btn_sq btn_opt" style="flex-shrink:0;width:44px;height:44px;background: var(--background-color);border-radius:24px;margin-left:8px;"></div>
+                            <div class="btn_sq btn_opt" style="background:var(--header-background-color);"></div>
+                            <hr class="vr_90" style=" width: 0; height: 24px; margin-left: 8px; padding-left: 8px; " />
+                            <div class="btn_sq btn_opt" style="flex-shrink:0;width:44px;height:44px;background: var(--background-color);border-radius:24px;"></div>
                         </div>
                     </div>
                     `);
