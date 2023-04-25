@@ -100,11 +100,11 @@ search_input && ["input"].forEach(eventType => search_input.addEventListener(eve
 }));
 
 const bulkSearchCityResults = (inputs) => {
-    console.log(inputs);
+    // console.log(inputs);
     const URL = (city_names, city_counters) => `/api/v1/weather/bulk?city_names=${city_names.join(",")}&city_counters=${city_counters.join(",")}`;
     const promise = fetch(URL(inputs.map(result => result.city_name), inputs.map(result => result.counter)));
     promise.then(data => data.json()).then(data => {
-        console.log(data.data.results);
+        // console.log(data.data.results);
         const results_element = document.getElementById("city_card_container");
         const results = data.data.results;
         results.forEach((city, index) => {
@@ -177,79 +177,123 @@ const bulkSearchCityResults = (inputs) => {
         for(let btn of remove_btns){
             btn.addEventListener("click", e => {
                 const id = parseInt(btn.dataset.id);
+                const dialog = document.getElementById("loading_dialog_remove_speedlist");
                 if(!confirm("Are you sure you want to remove this city from your speedlist?", "Remove City")){
                     return;
                 }
-                const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
-                DB_transaction.onsuccess = (e) => {
-                    const db = e.target.result;
-                    const transaction = db.transaction(OBJ_STORE_NAME, "readwrite");
-                    const store = transaction.objectStore(OBJ_STORE_NAME);
-                    const request = store.index("id").get(id);
-                    // console.log(request);
-                    request.onsuccess = (e) => {
-                        const speed_list_data = e.target.result;
-                        // console.log(speed_list_data);
-                        const delete_request = store.delete(speed_list_data.timestamp);
-                        delete_request.onsuccess = (e) => {
-                            btn.parentNode.parentNode.remove();
-                            if(results_element.children.length == 0){
-                                results_element.innerHTML = `
-                                <div class="city_card">
-                                    <div class="city_card_cont">
-                                        <div class="city_card_main_cont">
-                                            <div class="box_container hvr">
-                                                <div class="city_box flex box_content">
-                                                    <div class="city_name_box flex_grow">
-                                                        <h2>
-                                                            List is empty
-                                                        </h2>
-                                                        <p class="simpl_p">
-                                                            Search & add a city to get started
-                                                        </p>
+                dialog.showModal();
+                setTimeout(() => {
+                    const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
+                    DB_transaction.onsuccess = (e) => {
+                        const db = e.target.result;
+                        const transaction = db.transaction(OBJ_STORE_NAME, "readwrite");
+                        const store = transaction.objectStore(OBJ_STORE_NAME);
+                        const request = store.index("id").get(id);
+                        // console.log(request);
+                        request.onsuccess = (e) => {
+                            const speed_list_data = e.target.result;
+                            if(speed_list_data == undefined){
+                                btn.parentNode.parentNode.remove();
+                                if(results_element.children.length == 0){
+                                    results_element.innerHTML = `
+                                    <div class="city_card">
+                                        <div class="city_card_cont">
+                                            <div class="city_card_main_cont">
+                                                <div class="box_container hvr">
+                                                    <div class="city_box flex box_content">
+                                                        <div class="city_name_box flex_grow">
+                                                            <h2>
+                                                                List is empty
+                                                            </h2>
+                                                            <p class="simpl_p">
+                                                                Search & add a city to get started
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="box_content flex">
-                                                <div class="temperature_box flex flex_grow">
-                                                    <div class="main_temp">
-                                                        <h1 style="height:64px;width:64px;text-align:center;font-style:italic;opacity:0.6;">!!!!</h1>
+                                                <div class="box_content flex">
+                                                    <div class="temperature_box flex flex_grow">
+                                                        <div class="main_temp">
+                                                            <h1 style="height:64px;width:64px;text-align:center;font-style:italic;opacity:0.6;">!!!!</h1>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="weather_icon" title="Loading ..." style="padding: 14px;box-sizing: border-box;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 0 24 24" width="32px" fill="currentColor"><path xmlns="http://www.w3.org/2000/svg" d="M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z"></path>
-                                                    </svg>
+                                                    <div class="weather_icon" title="Loading ..." style="padding: 14px;box-sizing: border-box;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 0 24 24" width="32px" fill="currentColor"><path xmlns="http://www.w3.org/2000/svg" d="M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z"></path>
+                                                        </svg>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                `;
+                                    `;
+                                }
+                                dialog.close();
+                                return;
                             }
-                            alert("City removed from speedlist", "Success");
+                            const delete_request = store.delete(speed_list_data.timestamp);
+                            delete_request.onsuccess = (e) => {
+                                btn.parentNode.parentNode.remove();
+                                if(results_element.children.length == 0){
+                                    results_element.innerHTML = `
+                                    <div class="city_card">
+                                        <div class="city_card_cont">
+                                            <div class="city_card_main_cont">
+                                                <div class="box_container hvr">
+                                                    <div class="city_box flex box_content">
+                                                        <div class="city_name_box flex_grow">
+                                                            <h2>
+                                                                List is empty
+                                                            </h2>
+                                                            <p class="simpl_p">
+                                                                Search & add a city to get started
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="box_content flex">
+                                                    <div class="temperature_box flex flex_grow">
+                                                        <div class="main_temp">
+                                                            <h1 style="height:64px;width:64px;text-align:center;font-style:italic;opacity:0.6;">!!!!</h1>
+                                                        </div>
+                                                    </div>
+                                                    <div class="weather_icon" title="Loading ..." style="padding: 14px;box-sizing: border-box;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 0 24 24" width="32px" fill="currentColor"><path xmlns="http://www.w3.org/2000/svg" d="M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z"></path>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                                }
+                                dialog.close();
+                            }
+                            delete_request.onerror = (e) => {
+                                // console.log(e);
+                                alert("Failed to remove city from speedlist", "Error");
+                                dialog.close();
+                            }
                         }
-                        delete_request.onerror = (e) => {
-                            console.log(e.error);
+                        request.onerror = (e) => {
+                            // console.log(e.error);
                             alert("Failed to remove city from speedlist", "Error");
+                            dialog.close();
                         }
                     }
-                    request.onerror = (e) => {
-                        console.log(e.error);
+                    DB_transaction.onerror = (e) => {
+                        // console.log(e.error);
                         alert("Failed to remove city from speedlist", "Error");
+                        dialog.close();
                     }
-                }
-                DB_transaction.onerror = (e) => {
-                    console.log(e.error);
-                    alert("Failed to remove city from speedlist", "Error");
-                }
+                }, 1000);
             }, );
         }
     }).catch(e => {
-        console.log(e);
+        // console.log(e);
     })
 }
 
-const initialLoad = () => {
+const initialLoad = async () => {
     const DB_transaction = DB_init(DB_NAME, DB_VERSION, OBJ_STORE_NAME);
     DB_transaction.onsuccess = (e) => {
         const db = e.target.result;
@@ -312,7 +356,7 @@ const initialLoad = () => {
                     pre_result_container.innerHTML = innerHTML.join("");
                     bulkSearchCityResults(speed_list);
                 }else{
-                    console.log("No results found");
+                    // console.log("No results found");
                     pre_result_container.innerHTML = `
                     <div class="city_card">
                         <div class="city_card_cont">
@@ -347,11 +391,11 @@ const initialLoad = () => {
                 }
             }
         }catch(e){
-            console.log(e);
+            // console.log(e);
         }
 
     }
-    search_input && setTimeout(() => {search_input.focus();}, 1000);
+    search_input && setTimeout(() => {search_input.focus();}, 0);
 }
 
 document.addEventListener("DOMContentLoaded", () => {

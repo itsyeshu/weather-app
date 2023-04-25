@@ -41,8 +41,8 @@ const toggle_label = () => {
 
             const result = db.transaction(OBJ_STORE_NAME, "readwrite").objectStore(OBJ_STORE_NAME).add(label_data);
             result.onsuccess = (e) => {
-                console.log("object added successfully")
-                console.log('request.result : ', e.target);
+                // console.log("object added successfully")
+                // console.log('request.result : ', e.target);
                 label.querySelector('path').setAttribute('d', 'M3.5 18.99l11 .01c.67 0 1.27-.33 1.63-.84L20.5 12l-4.37-6.16c-.36-.51-.96-.84-1.63-.84l-11 .01L8.34 12 3.5 18.99z');
                 label.setAttribute('hvr', 'Added to Speed-list');
                 dialog.close();
@@ -152,11 +152,11 @@ const _init_ = () => {
             }
         }
         request.onerror = (e) => {
-            console.log("Error : ", e.target.error);
+            // console.log("Error : ", e.target.error);
         }
     }
     DB_transaction.onerror = (event) => {
-        console.log("Error while accessing objectStore", event.target.error);
+        // console.log("Error while accessing objectStore", event.target.error);
     }
 }
 

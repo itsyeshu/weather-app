@@ -1,5 +1,4 @@
 "use-strict";
-const html = document.documentElement;
 const gps_button = document.getElementById("gps_button");
 const toggle_theme_button = document.getElementById("toggle_theme_button");
 const gps_info_dialog = document.getElementById("gps_info_dialog");
@@ -11,7 +10,6 @@ const DB_VERSION = 2;
 const OBJ_STORE_NAME = "v1";
 const DEFAULT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
 
-var dark_theme = "LIGHT";
 
 gps_button && gps_button.addEventListener("click", e => {
     const success_function = (e) => {
@@ -20,7 +18,7 @@ gps_button && gps_button.addEventListener("click", e => {
             const URL = (lat, lon) => `/search/?lat=${lat}&lon=${lon}&timezone=${DEFAULT_TIME_ZONE}`;
             window.location.href = URL(lat, lon);
         } catch (e) {
-            console.log(e);
+            // console.log(e);
         }
     }
     const error_function = (e) => {
@@ -74,13 +72,6 @@ toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
 });
 
 function initialize() {
-    if(localStorage.getItem("dark_theme") === null) {
-        dark_theme = html.classList.contains("theme-dark")?"DARK":"LIGHT";
-        localStorage.setItem("dark_theme", dark_theme?"DARK":"LIGHT");
-    }else{
-        dark_theme = localStorage.getItem("dark_theme");
-    }
-    change_to_theme(dark_theme);
     const animate_clock = (clock, date) =>{
         const [second_hand, minute_hand, hour_hand] = clock.querySelectorAll(".clock_hand");
         const second = date.getSeconds();
@@ -109,11 +100,11 @@ const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
     DB_transaction.onupgradeneeded = (event) => {
         const db = event.target.result;
         if(db.objectStoreNames.contains(OBJ_STORE_NAME)){
-            console.log("Object store '" + OBJ_STORE_NAME + "' already exists");
+            // console.log("Object store '" + OBJ_STORE_NAME + "' already exists");
             db.deleteObjectStore(OBJ_STORE_NAME);
         }
         if(db.objectStoreNames.contains("city_label")){
-            console.log("Object store '" + "city_label" + "' already exists");
+            // console.log("Object store '" + "city_label" + "' already exists");
             db.deleteObjectStore("city_label");
         }
         objectStore = db.createObjectStore(OBJ_STORE_NAME, {keyPath: "timestamp"});
@@ -123,10 +114,10 @@ const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
         objectStore.createIndex("timestamp", "timestamp", {unique: true});
         objectStore.createIndex("city_name", "city_name", {unique: false});
         objectStore.createIndex("counter", "counter", {unique: false});
-        console.log("Object store created : ", objectStore);
+        // console.log("Object store created : ", objectStore);
     }
     DB_transaction.onerror = (event) => {
-        console.log("Error : ", event.target.errorCode);
+        // console.log("Error : ", event.target.errorCode);
     }
     return DB_transaction;
 }
