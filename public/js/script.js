@@ -58,13 +58,10 @@ function change_to_theme(_theme) {
     const dark_theme_path = document.getElementById("path_dark_theme");
     const light_theme_path = document.getElementById("path_light_theme");
     const path_from = document.getElementById("path_theme");
-    
+
     const path_to = !theme?dark_theme_path:light_theme_path;
     if(path_from && path_to) path_from.setAttribute("d", path_to.getAttribute("d"));
     toggle_theme_button.setAttribute("hvr", theme?"Switch to Light theme":"Switch to Dark theme");
-
-    // console.log("Saved to localStorage : ", localStorage.getItem("dark_theme"));
-    // console.log("Changed to theme : ", theme?"Dark":"Light");
 }
 
 toggle_theme_button && toggle_theme_button.addEventListener("click", e => {
@@ -90,9 +87,8 @@ function initialize() {
     }
     const clocks = document.querySelectorAll(".clock");
     clocks && clocks.length && setInterval(function(){ clocks.forEach(clock => {animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })))})}, 1000);
-    setTimeout(
-        ()=>{html.classList.add("loaded")}, 1000
-    )
+    setTimeout(()=>{html.classList.add("loaded")}, 1000);
+    change_to_theme(dark_theme);
 }
 
 const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {

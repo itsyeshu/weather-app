@@ -8,7 +8,7 @@ const GET_CITY_ID_URI = (name, limit, lang) => GEO_API_URL + `/search?name=${nam
 
 // Helper functions
 const clean_name = name => {
-    if(name == undefined || name == null || name == ""){
+    if(name == undefined || name == null || name.trim() == ""){
         throw new Error("City name is required");
     }
     if(name.length > 20){
@@ -54,7 +54,7 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
 
         var { data:city_data } = await axios.get(GET_CITY_ID_URI(city_name.toLowerCase(), limit, lang));
     }catch(e){
-        console.log(e);
+        console.error(e);
         return {
             "status" : "failed",
             "statusCode" : 500,

@@ -14,26 +14,8 @@
 <% } else { %>
     <meta name="theme-color" content="#327648">
 <% } %>
+<script type="text/javascript" src="/public/js/preload_script.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Righteous&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/public/css/variables.css">
 <link rel="stylesheet" href="/public/css/styles.css">
-
-
-<script>
-const html = document.documentElement;
-
-var dark_theme = "LIGHT";
-
-if(localStorage.getItem("dark_theme") === null) {
-    dark_theme = html.classList.contains("theme-dark")?"DARK":"LIGHT";
-    localStorage.setItem("dark_theme", dark_theme?"DARK":"LIGHT");
-}else{
-    dark_theme = localStorage.getItem("dark_theme");
-}
-if(dark_theme == "DARK") {
-    html.classList.add("theme-dark");
-}else{
-    html.classList.remove("theme-dark");
-}
-</script>

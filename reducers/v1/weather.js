@@ -170,7 +170,7 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
 }
 
 const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
-    var cities_data = await searchReducer.fetchCitiesFromName(name, counter, timezone, lang);
+    let cities_data = await searchReducer.fetchCitiesFromName(name, counter, lang);
     if(cities_data.error){
         return {
             "status" : "failed",
@@ -181,7 +181,7 @@ const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.D
         }
     }
     try{
-        var { data:cities, count } = data;
+        var { results:cities, count } = cities_data.data;
         if(counter > count){
             return {
                 "status" : "failed",
@@ -194,9 +194,33 @@ const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.D
                 "count" : 0,
             }
         }
-        var { id, lat, lon} = cities.results[counter-1];
-        var data = await axios.get(GET_ONLY_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
-
+        var { id, lat, lon, city} = cities[counter-1];
+        var { data : weather_data } = await axios.get(GET_ONLY_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
+        const data = {
+            "id" : id,
+            "lat" : DEFAULT.round(lat),
+            "lon" : DEFAULT.round(lon),
+            "name" : city.name,
+            "tabs" : [],
+            "query" : {
+                "city" : name,
+                "counter" : counter,
+                "lang" : lang,
+                "timezone" : timezone,
+            },
+            "city" : city,
+            "weather" : {
+                "temperature" : Math.round(weather_data.current_weather.temperature),
+                "temperature_unit" : "°C",
+                "weather" : getCurrentWeatherInfo(weather_data.current_weather.weathercode, weather_data.current_weather.is_day),
+                "is_day" : weather_data.current_weather.is_day,
+            }
+        }
+        return {
+            "status" : "success",
+            "statusCode": 200,
+            "data" : data,
+        };
     } catch(err){
         return {
             "status" : "failed",
@@ -206,12 +230,6 @@ const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.D
             "data" : {}
         }
     }
-
-    return {
-        "status" : "success",
-        "statusCode": 200,
-        "data" : data.data,
-    };
 }
 
 const getCurrentWeatherDataByLatLon = async (lat, lon, timezone = DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
@@ -437,6 +455,9 @@ const getBulkOnlyCurrentWeatherData = async (city_names, city_counters, lang=DEF
 module.exports = {
     getCurrentWeatherData,
     getCurrentWeatherDataByLatLon,
+
+    getOnlyCurrentWeatherData,
+
     getBulkOnlyCurrentWeatherData,
     getOnlyCurrentWeatherDataByLatLon,
 }

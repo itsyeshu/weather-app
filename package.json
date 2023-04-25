@@ -1,14 +1,13 @@
 {
-  "name": "01",
+  "name": "private-weather-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple weather app & api using Express, Node.js, and the OpenWeatherMap API.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "nodemon controllers/weather.js"
+    "dev": "nodemon app.js"
   },
-  "author": "",
+  "author": "its_yeshu",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.20"
