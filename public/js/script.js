@@ -80,7 +80,7 @@ function initialize() {
     }
     const clocks = document.querySelectorAll(".clock");
     clocks && clocks.length && setInterval(function(){ clocks.forEach(clock => {animate_clock(clock, new Date(new Date().toLocaleString('en-US', { timeZone : clock.dataset.timezone || "Asia/Kolkata" })))})}, 1000);
-    setTimeout(()=>{html.classList.add("loaded")}, 1000);
+    html.classList.add("loaded");
     change_to_theme(dark_theme);
 }
 
@@ -111,5 +111,5 @@ const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
     return DB_transaction;
 }
 
-
+window.addEventListener("beforeunload", (e)=>{html.classList.add("unload")});
 window.addEventListener("DOMContentLoaded", initialize);

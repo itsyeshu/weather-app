@@ -1,0 +1,114 @@
+{
+    "version": "1.0.0",
+
+    "short_name": "Weather App",
+    "name": "Weather App : Live weather & forecast",
+
+    "screenshots": [
+    {
+            "src": "/public/pwa/screenshots/w2.png",
+            "type": "image/png",
+            "sizes": "520x400",
+            "form_factor": "wide"
+    },
+    {
+        "src": "/public/pwa/screenshots/w3.png",
+        "type": "image/png",
+        "sizes": "520x400",
+        "form_factor": "wide"
+    },
+    {
+        "src": "/public/pwa/screenshots/w4.png",
+        "type": "image/png",
+        "sizes": "520x400",
+        "form_factor": "wide"
+    },
+    {
+        "src": "/public/pwa/screenshots/w5.png",
+        "type": "image/png",
+        "sizes": "520x400",
+        "form_factor": "wide"
+    },
+    {
+        "src": "/public/pwa/screenshots/n1.jpg",
+        "type": "image/jpg",
+        "sizes": "520x750",
+        "form_factor": "narrow"
+    },
+    {
+        "src": "/public/pwa/screenshots/n2.jpg",
+        "type": "image/jpg",
+        "sizes": "520x750",
+        "form_factor": "narrow"
+    },
+    {
+        "src": "/public/pwa/screenshots/n3.jpg",
+        "type": "image/jpg",
+        "sizes": "520x750",
+        "form_factor": "narrow"
+    },
+    {
+        "src": "/public/pwa/screenshots/n4.jpg",
+        "type": "image/jpg",
+        "sizes": "520x750",
+        "form_factor": "narrow"
+    },
+    {
+        "src": "/public/pwa/screenshots/n5.jpg",
+        "type": "image/jpg",
+        "sizes": "520x750",
+        "form_factor": "narrow"
+    }],
+    "description": "Get instant Live weather & forecast your place.\nInstall the app now.",
+    "icons": [{
+        "src" : "/public/pwa/logo/maskable_icon_x48.png",
+        "sizes": "48x48",
+        "color_scheme": "light",
+        "type": "image/png"
+    },{
+        "src" : "/public/pwa/logo/maskable_icon_x72.png",
+        "sizes": "72x72",
+        "color_scheme": "light",
+        "type": "image/png"
+    },{
+        "src" : "/public/pwa/logo/maskable_icon_x96.png",
+        "sizes": "96x96",
+        "color_scheme": "light",
+        "type": "image/png"
+    },{
+        "src" : "/public/pwa/logo/maskable_icon_x128.png",
+        "sizes": "128x128",
+        "color_scheme": "light",
+        "type": "image/png"
+    },{
+        "src" : "/public/pwa/logo/maskable_icon_x192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "color_scheme": "light",
+        "purpose": "maskable"
+    },{
+        "src" : "/public/pwa/logo/maskable_icon_x384.png",
+        "sizes": "384x384",
+        "color_scheme": "light",
+        "type": "image/png"
+    },{
+        "src" : "/public/pwa/logo/maskable_icon.png",
+        "sizes": "440x440",
+        "type": "image/png",
+        "color_scheme": "light",
+        "purpose": "maskable"
+    },{
+        "src" : "/public/img/favicon.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "color_scheme": "dark",
+        "purpose": "maskable"
+    }],
+    "id": "/?source=pwa",
+    "start_url": "/?source=pwa",
+    "theme_color": "#394d56",
+    "background_color": "#fafafa",
+    "display": "standalone",
+    "scope": "/",
+    "orientation": "portrait-primary"
+}

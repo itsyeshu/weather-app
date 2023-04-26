@@ -11,6 +11,9 @@ body {
     line-height: 24px;
     font-family: 'Open sans', 'Roboto', 'Ubuntu', Tahoma, Geneva, Verdana, sans-serif;
     word-break: break-word;
+    overscroll-behavior: none;
+    scrollbar-highlight-color: yellow;
+    -webkit-tap-highlight-color: transparent;
 }
 html{
     background: var(--background-color, #263238);
@@ -21,6 +24,47 @@ html{
 html.theme-dark{
     color-scheme: dark;
 }
+
+#header_loader_streak{
+    position: absolute;
+    width:0;height:0;
+    overflow: visible;
+    pointer-events: none;
+    bottom:0;left:0;
+    z-index: 1000;
+}
+
+html.unload #header_loader_streak{
+    content:"";
+    display:block;
+    width:0;height:3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--accent-font-color, #484848);
+    animation: streak 30s cubic-bezier(0, 0.06, 0.12, 1) forwards;
+    opacity: 0.4;
+}
+html.unload #header_loader_streak:after{
+    content:"";
+    display:block;
+    position: absolute;
+    right:0;top:0;
+    width:10px;height:100%;
+    border-radius: 50%;
+    background-blend-mode: color-burn;
+    box-shadow: 0 0 2px 1px var(--accent-font-color, #484848),  0 0 6px 0 var(--accent-font-color, #484848);
+    background: var(--accent-font-color, #484848);
+}
+
+@keyframes streak {
+    20% {
+        width:90%;
+    }
+    100%{
+        width:95%
+    }
+}
+
+
 p{margin: var(--box-spacing, 12px) 0;}
 .text_align_rt{text-align: right;}
 
