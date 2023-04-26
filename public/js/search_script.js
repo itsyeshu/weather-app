@@ -3,7 +3,7 @@ const search_input = document.getElementById("search_input");
 let search_timeout = undefined;
 
 const searchCityResults = (search_input) => {
-    const URL = (name) => `/api/v1/search/?city=${name}`;
+    const URL = (name) => `/api/v1/search/?city=${name}&lang=${DEFAULT_LANG}`;
     const searchCity = async (name) => {
         try{
             const data = await fetch(URL(name));
@@ -49,7 +49,7 @@ const searchCityResults = (search_input) => {
             const city = result.city;
             const result_element = document.createElement("a");
             result_element.classList.add("search_result");
-            result_element.href = `/search/?city=${data.query.city}&counter=${index+1}&timezone=${DEFAULT_TIME_ZONE}`;
+            result_element.href = `/search/?city=${data.query.city}&counter=${index+1}&timezone=${DEFAULT_TIME_ZONE}&lang=${DEFAULT_LANG}`;
             result_element.innerHTML = `
                 <div class="city_name_box">
                     <h2>
@@ -101,7 +101,7 @@ search_input && ["input"].forEach(eventType => search_input.addEventListener(eve
 
 const bulkSearchCityResults = (inputs) => {
     // console.log(inputs);
-    const URL = (city_names, city_counters) => `/api/v1/weather/bulk?city_names=${city_names.join(",")}&city_counters=${city_counters.join(",")}`;
+    const URL = (city_names, city_counters) => `/api/v1/weather/bulk?city_names=${city_names.join(",")}&city_counters=${city_counters.join(",")}&lang=${DEFAULT_LANG}`;
     const promise = fetch(URL(inputs.map(result => result.city_name), inputs.map(result => result.counter)));
     promise.then(data => data.json()).then(data => {
         // console.log(data.data.results);
@@ -391,10 +391,20 @@ const initialLoad = async () => {
                 }
             }
         }catch(e){
-            // console.log(e);
         }
 
     }
+    try{
+        const gps_btn = document.getElementById("gps_button");
+        const apprx_location = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client/?localityLanguange='+DEFAULT_LANG,{ mode : "cors", referrerPolicy : "no-referrer", origin : "bigdatacloud.net" }).then(res => res.json()).catch(e => "Couldnot load apprx location.");
+        const apprx_loc_box = document.createElement("a");
+        apprx_loc_box.style.paddingInline = "15px";
+        apprx_loc_box.className = "btn_sq btn_opt special_link hvr";
+        apprx_loc_box.setAttribute("hvr", "Approx Location");
+        apprx_loc_box.setAttribute("href", "/search/?lat="+parseFloat(apprx_location.latitude).toFixed(5)+"&lon="+parseFloat(apprx_location.longitude).toFixed(5)+"&timezone="+DEFAULT_TIME_ZONE+"&lang="+DEFAULT_LANG);
+        apprx_loc_box.innerHTML = `${ apprx_location.city } <span class="country_code" title="Maharashtra, India"><img src="https://open-meteo.com/images/country-flags/${ apprx_location.countryCode.toLowerCase() }.svg" alt="🇮🇳"></span>`;
+        gps_btn.insertAdjacentElement("afterend", apprx_loc_box);
+    }catch(e){}
     search_input && setTimeout(() => {search_input.focus();}, 0);
 }
 

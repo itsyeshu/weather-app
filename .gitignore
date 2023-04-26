@@ -1,3 +1,4 @@
 .env
+.env_demo
 /node_modules
 /tests

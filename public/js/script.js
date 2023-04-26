@@ -3,19 +3,11 @@ const gps_button = document.getElementById("gps_button");
 const toggle_theme_button = document.getElementById("toggle_theme_button");
 const gps_info_dialog = document.getElementById("gps_info_dialog");
 
-const SPEED_LIST_LIMIT = 4;
-
-const DB_NAME = "speed_list";
-const DB_VERSION = 2;
-const OBJ_STORE_NAME = "v1";
-const DEFAULT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
-
-
 gps_button && gps_button.addEventListener("click", e => {
     const success_function = (e) => {
         try {
             const { latitude:lat, longitude:lon } = e.coords;
-            const URL = (lat, lon) => `/search/?lat=${lat}&lon=${lon}&timezone=${DEFAULT_TIME_ZONE}`;
+            const URL = (lat, lon) => `/search/?lat=${lat}&lon=${lon}&timezone=${DEFAULT_TIME_ZONE}&lang=${DEFAULT_LANG}`;
             window.location.href = URL(lat, lon);
         } catch (e) {
             // console.log(e);
@@ -31,7 +23,8 @@ gps_button && gps_button.addEventListener("click", e => {
     const main = (e) => {
         navigator.geolocation.getCurrentPosition(success_function, error_function, {
             enableHighAccuracy: true,
-            timeout: 5000
+            timeout: 5000,
+            maximumAge: 0
         });
         gps_info_dialog.showModal();
     }
