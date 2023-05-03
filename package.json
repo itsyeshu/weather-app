@@ -1,21 +1,24 @@
 {
-  "name": "private-weather-app",
-  "version": "1.0.0",
-  "description": "A simple weather app & api using Express, Node.js, and the OpenWeatherMap API.",
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
-  },
-  "author": "its_yeshu",
-  "license": "MIT",
-  "devDependencies": {
-    "nodemon": "^2.0.20"
-  },
-  "dependencies": {
-    "axios": "^1.3.3",
-    "dotenv": "^16.0.3",
-    "ejs": "^3.1.8",
-    "express": "^4.18.2"
-  }
+    "name": "private-weather-app",
+    "version": "1.0.0",
+    "description": "A simple weather app & api using Express, Node.js, and the OpenWeatherMap API.",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js"
+    },
+    "author": "its_yeshu",
+    "license": "MIT",
+    "devDependencies": {
+        "nodemon": "^2.0.20"
+    },
+    "dependencies": {
+        "axios": "^1.3.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.3",
+        "ejs": "^3.1.8",
+        "express": "^4.18.2",
+        "morgan": "^1.10.0",
+        "puppeteer-core": "^9.1.1"
+    }
 }

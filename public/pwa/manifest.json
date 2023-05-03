@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "2.8.2",
 
     "short_name": "Weather App",
     "name": "Weather App : Live weather & forecast",
@@ -98,7 +98,7 @@
         "color_scheme": "light",
         "purpose": "maskable"
     },{
-        "src" : "/public/img/favicon.png",
+        "src" : "/public/img/favicon_512dp.png",
         "sizes": "512x512",
         "type": "image/png",
         "color_scheme": "dark",
@@ -106,8 +106,8 @@
     }],
     "id": "/?source=pwa",
     "start_url": "/?source=pwa",
-    "theme_color": "#394d56",
-    "background_color": "#fafafa",
+    "theme_color": "#327648",
+    "background_color": "#dfdfdf",
     "display": "standalone",
     "scope": "/",
     "orientation": "portrait-primary"

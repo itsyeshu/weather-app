@@ -31,16 +31,27 @@ const registerServiceWorker = async () => {
     if ("serviceWorker" in navigator) {
         try {
             const registration = await navigator.serviceWorker.register("/sw.js", {scope: "/",});
-            if (registration.installing) {
-                console.log("Service worker installing");
-            } else if (registration.waiting) {
-                console.log("Service worker installed");
-            } else if (registration.active) {
-                console.log("Service worker active");
-            }
+            // if (registration.installing) {
+            //     console.log("Service worker installing");
+            // } else if (registration.waiting) {
+            //     console.log("Service worker installed");
+            // } else if (registration.active) {
+            //     console.log("Service worker active");
+            // }
         } catch (e) {
             console.error(`Registration failed with ${e}`);
         }
     }
 };
 setTimeout(registerServiceWorker, 0);
+
+
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        const dialogs = document.querySelectorAll("dialog");
+        for(let i=0; i<dialogs.length; i++) {
+            dialogs[i].close();
+        }
+        html.classList.remove("unload");
+    }
+});

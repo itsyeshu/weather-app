@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Check your Internet Connection | Weather App</title>
+        <meta name="robots" content="noindex nofollow">
+        <meta name="googlebot" content="noindex">
+        <link rel="stylesheet" href="/public/css/variables.css">
+        <link rel="stylesheet" href="/public/css/styles.css">
+        <link rel="shortcut icon" href="/public/img/favicon.png" type="image/png">
+        <link rel="icon" href="/public/img/favicon.png" sizes="64x64" type="image/png">
+        <link rel="apple-touch-icon-precomposed" href="/public/img/favicon.png" type="image/png" sizes="64x64">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&amp;family=Righteous&amp;display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <header id="header">
+            <div class="header_cont flex">
+                <div id="logo" class="flex">
+                    <div class="logo_box flex">
+                        
+                        <a href="/" class="head_anchor" style="width:54px;">
+                            <img src="/public/img/favicon.png" alt="Weather App">
+                        </a>
+                    </div>
+                    <div class="logo_box flex">
+                        <a href="/" class="head_anchor">
+                            <h1>
+                                <span style="display:block;font-size:12px;line-height: 16px;">Live weather</span> &amp; Forecast
+                            </h1>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="header_loader_streak"></div>
+        </header>
+        <main id="app">
+            <div id="container">
+                <div id="content">
+                    <section class="section">
+                        <div class="max_width">
+                            <div class="title">
+                                <span style="line-height: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif; color: #546e7a;font-size: 16px; display: block; pointer-events: none; margin: 40px 0 48px 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 0 24 24" width="48" fill="currentColor">
+                                        <path xmlns="http://www.w3.org/2000/svg" d="M21 11l2-2c-3.73-3.73-8.87-5.15-13.7-4.31l2.58 2.58c3.3-.02 6.61 1.22 9.12 3.73zm-2 2c-1.08-1.08-2.36-1.85-3.72-2.33l3.02 3.02.7-.69zM9 17l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zM3.41 1.64L2 3.05 5.05 6.1C3.59 6.83 2.22 7.79 1 9l2 2c1.23-1.23 2.65-2.16 4.17-2.78l2.24 2.24C7.79 10.89 6.27 11.74 5 13l2 2c1.35-1.35 3.11-2.04 4.89-2.06l7.08 7.08 1.41-1.41L3.41 1.64z"/>
+                                    </svg>
+                                </span>
+                                <h2>OOPS! No internet</h2>
+                            </div>
+                            <div>
+                                <p style="margin:0 0 12px 0;">Make sure this device is connected to Internet</p>
+                                <p style="margin:24px 0 8px 0;">You can try</p>
+                                <ul style="margin:4px 0 8px 0;">
+                                    <li>Reloading this page</li>
+                                    <li>Restarting your device to regain connection</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="max_width">
+                            <div class="flex">
+                                <a class="btn special_link bold_btn hvr" hvr="Try reloading" href="" style="padding: 9px 16px 9px 8px;">
+                                    <span class="country_code" style="margin-right:5px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18" fill="currentColor" fillOpacity="0.6">
+                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
+                                        </svg>
+                                    </span> Reload
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

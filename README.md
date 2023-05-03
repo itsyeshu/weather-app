@@ -9,9 +9,8 @@ Get live weather updates for your city & locality
 * ✅ Use GPS co-ordinates to get weather updates near you
 * ✅ Available in different themes (Light / Dark)
 * ✅ As an Open-source project, fork it, modify it, and make a pull request
-
+* ✅ Dynamic open-graph Image preview on social-media sites
 
 ### Nice to haves
 * ✅ Personalization
 * ✅ Speed-list
-* [ ]  Push notifications

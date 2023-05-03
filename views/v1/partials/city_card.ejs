@@ -1,54 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" 
+    <% if(!city.weather.is_day) { %>
+        class="theme-dark"
+    <% }%>
+    >
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= city.name %></title>
-    <link rel="stylesheet" href="/public/css/variables.css">
-    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="<%= static('/public/css/variables.css') %>">
+    <link rel="stylesheet" href="<%= static('/public/css/styles.css') %>">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;family=Righteous&amp;display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="city_card">
-        <div class="city_card_cont">
-            <div class="is_day_background">
+    <div class="city_card" style="font-weight:500;">
+        <div class="city_card_cont" style="border:none!important;border-radius:0!important;">
+            <div class="is_day_background" style="overflow:visible;">
                 <% if(city.weather.is_day) { %>
-                    <img src="/public/img/day_image.jpg" alt="Day" style="display:block;width:100%;height:auto;">
+                    <img src="<%= static('/public/img/day_image.jpg') %>" alt="Day" style="display:block;width:100%;height:auto;">
                 <% } else { %>
-                    <img src="/public/img/night_image.jpg" alt="Night" style="display:block;width:100%;height:auto;">
+                    <img src="<%= static('/public/img/night_image.jpg') %>" alt="Night" style="display:block;width:100%;height:auto;">
                 <% } %>
-                <div class="is_day_overlay"></div>
+                <div class="is_day_overlay" style="left:-1px;"></div>
             </div>
-            <a href="/search/?city=<%= city.query.city %>&counter=<%= city.query.counter %>" class="simpl_btn">
-                <div class="city_card_main_cont">
-                    <div class="box_container hvr">
-                        <div class="city_box flex box_content">
-                            <div class="city_name_box flex_grow">
-                                <h2>
+            <div class="city_card_main_cont">
+                <div class="box_container hvr">
+                    <div class="city_box flex box_content">
+                        <div class="city_name_box flex_grow">
+                            <h2 style="width:80%;height:26px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">
+                                <% if(city.name.length <= 14) { %>
                                     <%= city.name %>
-                                    <span class="country_code" title="<%= city.city.state %>, <%= city.city.country %>"><img src="https://open-meteo.com/images/country-flags/<%= city.city.country_code.toLowerCase() %>.svg" alt="<%= city.city.country_code %>"></span>
-                                </h2>
-                                <p class="simpl_p"><%= city.lat %>, <%= city.lon %> • <%= city.city.state %>, <%= city.city.country_code %></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="box_content flex">
-                        <div class="temperature_box flex flex_grow">
-                            <div class="main_temp">
-                                <h1><%= city.weather.temperature %></h1>
-                            </div>
-                            <div class="main_temp_scales">
-                                <div class="main_temp_overlay"></div>
-                                <div class="main_temp_scale"><%= city.weather.temperature_unit %></div>
-                                <div class="main_temp_scale "><%= city.weather.weather.desc %></div>
-                            </div>
-                        </div>
-                        <div class="weather_icon" title="<%= city.weather.weather.desc %>">
-                            <img src="https://openweathermap.org/img/wn/<%= city.weather.weather.icon %>@2x.png" alt="<%= city.weather.weather.desc %>">
+                                <% } else { %>
+                                    <%= city.name.slice(0, 12) %> &hellip;
+                                <% } %>
+                                <span class="country_code" title="<%= city.city.state %>, <%= city.city.country %>"><img src="https://open-meteo.com/images/country-flags/<%= city.city.country_code.toLowerCase() %>.svg" alt="<%= city.city.country_code %>"></span>
+                            </h2>
+                            <p class="simpl_p"><%= city.lat %>, <%= city.lon %> • <%= city.city.state %>, <%= city.city.country_code %></p>
                         </div>
                     </div>
                 </div>
-            </a>
+                <div class="box_content flex">
+                    <div class="temperature_box flex flex_grow">
+                        <div class="main_temp">
+                            <h1><%= city.weather.temperature %></h1>
+                        </div>
+                        <div class="main_temp_scales">
+                            <div class="main_temp_overlay"></div>
+                            <div class="main_temp_scale"><%= city.weather.temperature_unit %></div>
+                            <div class="main_temp_scale "><%= city.weather.weather.desc %></div>
+                        </div>
+                    </div>
+                    <div class="weather_icon" title="<%= city.weather.weather.desc %>">
+                        <img src="https://openweathermap.org/img/wn/<%= city.weather.weather.icon %>@2x.png" alt="<%= city.weather.weather.desc %>">
+                    </div>
+                </div>
+            </div>
+            <div class="flex" style="box-sizing:border-box;width:100%;margin: 0 0 -2px;padding:0 var(--box-spacing, 12px);height:36px;background:var(--header-background-color, #4e4e4e);color:var(--header-font-color, #f4f4f4);">
+                <span style="width:auto;white-space: nowrap;font-size: 11px;">Designed by YeShu</span>
+                <span class="flex_grow"></span>
+                <span style="width:auto;white-space: nowrap;">Click to know more</span>
+            </div>
         </div>
     </div>
 </body>

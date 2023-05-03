@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const path = require("path")
 
-// Routes
+// Import Routes
 const apiRoutes = require("./apiRouter")
 
 const otherRoutes = {
@@ -11,14 +11,21 @@ const otherRoutes = {
 }
 
 
+/// Routes
 // API
 router.use('/api', apiRoutes);
-
 // Router
 router.use('/', otherRoutes.recent);
 
+
+/// PWA
+// Service worker
 router.get('/sw.js', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'pwa', 'service_worker.js'));
+});
+// Offline page
+router.get('/offline_pwa', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'pwa', 'offline.html'));
 });
 
 // API docs

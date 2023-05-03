@@ -25,12 +25,13 @@ const aqiController = async (req, res) => {
     
     if(city_name === ""){
         return res.status(200).send({
-            "status": "success",
+            "status": "failed",
             "statusCode": 400,
             "error": "Bad Request",
             "message": "City name is required",
             "data" : {}
         });
+        // return next();
     }
 
     if(city_name === undefined){
@@ -53,6 +54,7 @@ const aqiController = async (req, res) => {
                     "error": "Bad Request",
                     "message": "Latitude and Longitude are required and must be numbers"
                 });
+                // return next();
             }
             const date = req.query.date || undefined;
             const timezone = req.query.timezone || DEFAULT.DEFAULT_TIME_ZONE;
@@ -66,6 +68,7 @@ const aqiController = async (req, res) => {
                     "message": "Success",
                     "data": air_quality,
                 });
+                // return next();
             }catch(err) {
                 return res.status(200).send({
                     "status": "failed",
@@ -73,15 +76,8 @@ const aqiController = async (req, res) => {
                     "error": "Internal Server Error",
                     "message": `${err.message}`
                 })
+                // return next();
             };
-    }
-    if (isNaN(counter) || counter <= 0){
-        return res.status(400).send({
-            "status": "success",
-            "statusCode": 400,
-            "error": "Bad Request",
-            "message": "Counter must be a positive integer"
-        });
     }
     const _cities_data = await searchReducer.fetchCitiesFromName(city_name, limit, lang);
     if(_cities_data.error){
@@ -92,16 +88,18 @@ const aqiController = async (req, res) => {
             "message": _cities_data.message,
             "data" : _cities_data.data
         });
+        // return next();
     }
     const city_array = _cities_data.data.results;
     const count = _cities_data.count;
     if(counter > count){
         return res.status(200).send({
-            "status": "success",
+            "status": "failed",
             "statusCode": 206,
             "error": "City not found at provided index",
             "message": `City with name "${city_name}" not found at index : ${counter}. ` + (count > 1 ? `Accepted values are "1 - ${count}"` : `Accepted value is "1"`)
-        })
+        });
+        // return next();
     }
     const city = city_array[counter-1];
     const _air_quality_data = await aqiReducer.fetchCurrentAirQualityIndex(city.lat, city.lon, start_date, end_date, timezone, lang);
@@ -113,15 +111,16 @@ const aqiController = async (req, res) => {
             "message": _air_quality_data.message,
             "data" : _air_quality_data.data
         });
+        // return next();
     }
     const air_quality = _air_quality_data.data;
-    return res.status(200).send({
+    res.status(200).send({
         "status": "success",
         "statusCode": 200,
         "city": city,
         "data": air_quality,
     });
-};
+}
 
 module.exports = {
     aqiController,

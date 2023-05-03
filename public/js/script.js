@@ -111,5 +111,7 @@ const DB_init = (DB_NAME, DB_VERSION, OBJ_STORE_NAME) => {
     return DB_transaction;
 }
 
-window.addEventListener("beforeunload", (e)=>{html.classList.add("unload")});
+window.addEventListener("beforeunload", (e)=>{
+    html.classList.add("unload");
+});
 window.addEventListener("DOMContentLoaded", initialize);

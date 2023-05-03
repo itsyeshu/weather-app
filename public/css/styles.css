@@ -410,7 +410,7 @@ html.loaded .btn_sq{
 
 .btn.bold_btn{
     background: var(--accent-font-color, #f3f3f3);
-    border:none;
+    border-color:transparent;
     color:var(--background-color, #afafaf);
 }
 
@@ -554,6 +554,10 @@ html.loaded .tab, html.loaded .tag, html.loaded .simpl_tag{
     font-size: 62px;
     font-weight: 500;
     line-height: 60px;
+    font-family: "Righteous";
+}
+
+#city_weather > div:nth-child(2) > div:nth-child(2) > p{
     font-family: "Righteous";
 }
 

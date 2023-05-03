@@ -76,6 +76,7 @@ const getCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.DEFAU
             "data": {}
         }
     }
+    // console.log(_air_quality_index_data)
     const air_quality_index_data = _air_quality_index_data.data;
     const current_hour = new Date(weather_data.current_weather.time).getHours();
 

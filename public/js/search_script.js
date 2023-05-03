@@ -71,7 +71,7 @@ const searchCityResults = (search_input) => {
             <div class="city_name_box">
                 <h2>
                     Loading 
-                    <span><img src="/public/img/loading-transparent.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;"></span>
+                    <span><img src="/public/img/spinner.gif" alt="" style="display:inline-block;width: 18px;height: 18px;vertical-align: baseline;"></span>
                 </h2>
                 <p class="simpl_p">Loading cities with name "${city_name}"</p>
             </div>`;
@@ -114,6 +114,7 @@ const bulkSearchCityResults = (inputs) => {
                 "class" : ""
             });
         });
+        // console.log(results);
         const innerHTML = results.map(city => (`
         <div class="city_card">
             <div class="city_card_cont">

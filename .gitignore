@@ -1,4 +1,8 @@
 .env
 .env_demo
+
+.cache
 /node_modules
 /tests
+/.cache
+/.logs

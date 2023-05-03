@@ -54,7 +54,7 @@ const fetchCitiesFromName = async (city_name, limit=DEFAULT.DEFAULT_CITY_LIMIT, 
 
         var { data:city_data } = await axios.get(GET_CITY_ID_URI(city_name.toLowerCase(), limit, lang));
     }catch(e){
-        console.error(e);
+        // console.error(e);
         return {
             "status" : "failed",
             "statusCode" : 500,

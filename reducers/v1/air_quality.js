@@ -37,7 +37,7 @@ const avgOfArray = (array) => Math.round(array.reduce((a, b) => a + b, 0) / arra
 const addDays = (date, add) => {
     let new_date = new Date(date);
     new_date.setDate(new_date.getDate() + add);
-    return (new_date.getFullYear() + "-" + (new_date.getMonth()<9?"0":"") + (new_date.getMonth() + 1) + "-" + (new_date.getDate()));
+    return (new_date.getFullYear() + "-" + (new_date.getMonth()<9?"0":"") + (new_date.getMonth() + 1) + "-" + (new_date.getDate()<=9?"0":"") + (new_date.getDate()));
 }
 
 // Consult this code : https://app.cpcbccr.com/ccr_docs/FINAL-REPORT_AQI_.pdf
@@ -61,8 +61,11 @@ const fetchCurrentAirQuality = async (lat, lon, start_date, end_date, timezone=D
     // @return: Object of air quality data
 
     try{
+        // console.log(start_date);
+        // console.log(end_date);
         var { data:air_quality_data } = await axios.get(GET_CURRENT_AIR_QUALITY_URI(lat, lon, start_date, end_date, timezone, lang));
     }catch(err){
+        // console.error(err);
         return {
             "status" : "failed",
             "statusCode" : 500,
@@ -107,8 +110,8 @@ const fetchCurrentAirQuality = async (lat, lon, start_date, end_date, timezone=D
 }
 
 const fetchCurrentAirQualityIndex = async (lat, lon, date, timezone=DEFAULT.DEFAULT_TIME_ZONE, lang=DEFAULT.DEFAULT_LANG) => {
-    const data = await fetchCurrentAirQuality(lat, lon, addDays(date, -1), date, timezone, lang);
-
+    const data = await fetchCurrentAirQuality(lat, lon, addDays(date, -1), addDays(date, 0), timezone, lang);
+    // console.log(data);
     if(data.error)
         return {
             "status" : "failed",
