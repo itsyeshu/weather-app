@@ -107,9 +107,9 @@ async function generateImage(template, template_data, ss_path) {
 
     console.log("File not found in cache, creating a new one");
     // Render some HTML from the relevant template
-    const html = await ejs.renderFile(template, template_data),
+    const html = await ejs.renderFile(template, template_data);
     // Launch a new browser
-    const broser = await puppeteer.launch(puppeteer_options);
+    const browser = await puppeteer.launch(puppeteer_options);
     console.log("HTML rendered & Browser launched")
     // Create a new page
     const page = await browser.newPage();
