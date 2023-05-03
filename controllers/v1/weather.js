@@ -90,12 +90,12 @@ const weatherController = async (req, res, next) => {
 
 // Dynmaic Weather OG Image helper function
 async function generateImage(template, template_data, ss_path) {
-    // console.log("Loading OG:Image");
+    console.log("Loading OG:Image");
 
-    // console.log("Checking for File in cache : ", template_data.city.id +".jpg")
+    console.log("Checking for File in cache : ", template_data.city.id +".jpg")
     if(fsSync.existsSync(ss_path)){
         image = Buffer.from(fsSync.readFileSync(ss_path));
-        // console.log("Serving the image from cache");
+        console.log("Serving the image from cache");
         return image;
     }
 
@@ -105,25 +105,19 @@ async function generateImage(template, template_data, ss_path) {
         "headless": "new"
     };
 
-    // console.log("File not found in cache, creating a new one");
+    console.log("File not found in cache, creating a new one");
     // Render some HTML from the relevant template
-    const promises = [
-        ejs.renderFile(template, template_data),
-        puppeteer.launch(puppeteer_options)
-    ];
+    const html = await ejs.renderFile(template, template_data),
     // Launch a new browser
-    const [html, browser] = await Promise.all(promises).catch(err => {
-        console.log(err);
-        return null;
-    });
-    // console.log("HTML rendered & Browser launched")
+    const broser = await puppeteer.launch(puppeteer_options);
+    console.log("HTML rendered & Browser launched")
     // Create a new page
     const page = await browser.newPage();
-    // console.log("New tab launched")
-    // console.log("Adding HTML content to the Tab")
+    console.log("New tab launched")
+    console.log("Adding HTML content to the Tab")
     // Set the content to our rendered HTML
     await page.setContent(html, { "waitUntil": "networkidle0" });
-    // console.log("Added HTML content to the Tab")
+    console.log("Added HTML content to the Tab")
 
     const screenshotBuffer = await page.screenshot({
     //  fullPage: false, // Default
@@ -137,10 +131,10 @@ async function generateImage(template, template_data, ss_path) {
         quality: 100,
         path : ss_path
     });
-    // console.log("Took the screenshot")
+    console.log("Took the screenshot")
 
     await browser.close();
-    // console.log("Browser closed")
+    console.log("Browser closed")
 
     return screenshotBuffer;
 }
