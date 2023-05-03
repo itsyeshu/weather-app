@@ -114,7 +114,7 @@ async function generateImage(template, template_data, ss_path) {
     // Launch a new browser
     const [html, browser] = await Promise.all(promises).catch(err => {
         console.log(err);
-        return res.sendStatus(500);
+        return null;
     });
     // console.log("HTML rendered & Browser launched")
     // Create a new page
@@ -196,6 +196,10 @@ dynamicWeatherOGImageController = async (req, res, next) => {
         city : data.data,
         static : res.locals.static,
     }, ss_path);
+
+    if(img === null){
+        return res.sendStatus(500);
+    }
 
     res.writeHead(200, {
         'Content-Type': 'image/jpg',
