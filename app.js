@@ -14,10 +14,10 @@ app.set('view engine', 'ejs');
 // Set Public folder for static files
 app.use('/public', express.static(Path.join(__dirname, 'public')))
 
-// Site //
+/// Site
 app.use('/', Routes);
 
-// about page
+// Show 404 error page
 app.use(function(req, res, error) {
     res.render('v1/pages/error_page', {
         "error_code": "HTTP " + 404,

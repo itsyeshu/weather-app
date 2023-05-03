@@ -26,7 +26,7 @@ router.use('/', middlewares.setLocales)
 router.use('/', morgan(':date[clf] ":method :url HTTP/:http-version" :status'))
 
 router.use(cors({
-    origin: 'http://example.com',
+    origin: ["weather-api-itsyeshu.azurewebsites.net", "https://cecf-103-5-135-75.ngrok-free.app",],
     optionsSuccessStatus: 200
 }))
 

@@ -1,5 +1,6 @@
 const setLocales = (req, res, next) => {
-    const site = `${req.protocol}://${req.headers.host}`;
+    // console.log(req.headers);
+    const site = `${req.get("x-forwarded-proto") || req.get('X-Forwarded-Proto') || req.proto }://${req.headers.host}`;
     res.locals = {
         "dev" : false,
         "site" : site,
