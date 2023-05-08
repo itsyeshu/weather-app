@@ -3,10 +3,10 @@
 <head>
     <%- include('../partials/head', {
             title : "Live weather & forecast",
-            favicon : static("/public/img/favicon.png"),
-            og_img : static("/public/img/favicon.png"),
+            favicon : "/public/img/favicon.png",
+            og_img : "/public/img/favicon.png",
             desc : "Weather app gives you the most accurate weather info that makes it worth visiting.",
-            dark_theme : false,
+            dark_theme : true,
     }); %>
 </head>
 <body>
@@ -22,13 +22,13 @@
                     <div class="max_width">
                         <div class="content">
                             <div class="img_cont" id="rotating_globe_img_cont">
-                                <img src='<%= static("/public/img/error.gif") %>' alt="Rotating globe">
+                                <img src="/public/img/error.gif" alt="Rotating globe">
                             </div>
                             <h2 class="content_title"><%= error %></h1>
                             <h3 class="content_subtitle"><%= message %></h2>
                             <p class="content_desc"><em> <%= error_code %></em></p>
                             <div style="padding:12px 0;">
-                                <a href='<%= static("/") %>' class="simpl_btn btn" style="background:#7bd3ca;">
+                                <a href="/" class="simpl_btn btn" style="background:#7bd3ca;">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill="currentColor" style="padding:4px;vertical-align: bottom;margin-left:-6px;"><path xmlns="http://www.w3.org/2000/svg" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                                     Go back
                                 </a>
@@ -39,7 +39,7 @@
             </div>
         </div>
     </main>
-    <script type="text/javascript" src='<%= static("/public/js/script.js") %>'></script>
-    <script type="text/javascript" src='<%= static("/public/js/search_script.js") %>'></script>
+    <script type="text/javascript" src="/public/js/script.js"></script>
+    <script type="text/javascript" src="/public/js/search_script.js"></script>
 </body>
 </html>

@@ -182,7 +182,8 @@ const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.D
         }
     }
     try{
-        var { results:cities, count } = cities_data.data;
+        let { results:cities } = cities_data.data;
+        let count = cities_data.count;
         if(counter > count){
             return {
                 "status" : "failed",
@@ -195,8 +196,8 @@ const getOnlyCurrentWeatherData = async (name, counter = 1, timezone = DEFAULT.D
                 "count" : 0,
             }
         }
-        var { id, lat, lon, city} = cities[counter-1];
-        var { data : weather_data } = await axios.get(GET_ONLY_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
+        let { id, lat, lon, city} = cities[counter-1];
+        let { data : weather_data } = await axios.get(GET_ONLY_CURRENT_WEATHER_URI(lat, lon, timezone, lang));
         const data = {
             "id" : id,
             "lat" : DEFAULT.round(lat),

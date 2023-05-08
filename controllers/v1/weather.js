@@ -18,14 +18,14 @@ const weatherController = async (req, res, next) => {
     const lang = req.query.lang || DEFAULT.DEFAULT_LANG;
 
     if(city_name === ""){
-        return res.status(200).send({
-            "status": "failed",
-            "statusCode": 400,
-            "data" : {},
-            "error": "Bad Request",
-            "message": "City name is required"
+        const error = new Error("Bad Request", {
+            cause : {
+                statusCode : 400,
+                message : "City name is required"
+            }
         });
-        // return next();
+        res.locals.err = error;
+        return next(error);
     }
 
     if(city_name === undefined){
@@ -33,28 +33,29 @@ const weatherController = async (req, res, next) => {
         const lon = req.query.lon || "";
 
         if(!lat || lat == "" || !lon || lon == "" || isNaN(lat) || isNaN(lon)){
-            res.status(200).send({
-                "status": "failed",
-                "statusCode": 400,
-                "data" : {},
-                "error": "Bad Request",
-                "message": "Latitude and Longitude are required"
+            const error = new Error("Bad Request", {
+                cause : {
+                    statusCode : 400,
+                    message : "Latitude and Longitude are required"
+                }
             });
-            // return next();
+            res.locals.err = error;
+            return next(error);
         }
         const timezone = req.query.timezone || DEFAULT.DEFAULT_TIME_ZONE;
         const lang = req.query.lang || DEFAULT.DEFAULT_LANG;
 
         const weather_data = await weatherReducer.getCurrentWeatherDataByLatLon(lat, lon, timezone, lang);
         if(weather_data.error){
-            res.send({
-                "status": "failed",
-                "statusCode": weather_data.statusCode,
-                "error": weather_data.error,
-                "message": weather_data.message,
-                "data": weather_data.data
+            console.log("Error : ", weather_data.error);
+            const error = new Error(weather_data.error, {
+                cause : {
+                    statusCode : weather_data.statusCode,
+                    message : weather_data.message
+                }
             });
-            // return next();
+            res.locals.err = error;
+            return next(error);
         }
         res.render('v1/pages/latlon_weather', {
             "data" : weather_data.data
@@ -62,26 +63,27 @@ const weatherController = async (req, res, next) => {
     }
 
     if(isNaN(counter) || counter < 1){
-        return res.status(200).send({
-            "status": "failed",
-            "statusCode": 400,
-            "data" : null,
-            "error": "Bad Request",
-            "message": "Counter must be a positive number"
+        const error = new Error("Bad Request", {
+            cause : {
+                statusCode : 400,
+                message : "Counter must be a positive number"
+            }
         });
-        // return next();
+        res.locals.err = error;
+        return next(error);
     }
 
     const weather_data = await weatherReducer.getCurrentWeatherData(city_name, counter, timezone, lang);
     if(weather_data.error){
-        return res.send({
-            "status": "failed",
-            "statusCode": weather_data.statusCode,
-            "error": weather_data.error,
-            "message": weather_data.message,
-            "data": weather_data.data
+        // console.log(weather_data.error);
+        const error = new Error(weather_data.error, {
+            cause : {
+                statusCode : weather_data.statusCode,
+                message : weather_data.message
+            }
         });
-        // return next();
+        res.locals.err = error;
+        return next(error);
     }
     res.render('v1/pages/weather', {
         "data" : weather_data.data
@@ -101,7 +103,6 @@ async function generateImage(template, template_data, ss_path) {
 
     const puppeteer_options = {
         "args": ["--no-sandbox", "--disable-setuid-sandbox"],
-        "executablePath": process.env.CHROMIUM_EXE_PATH,
         "headless": "new"
     };
 
@@ -148,11 +149,15 @@ dynamicWeatherOGImageController = async (req, res, next) => {
         req.query.counter,
         req.query.timezone,
         req.query.lang );
-    // console.log(data);
     if(data.error){
-        console.log(data.error);
-        return res.sendStatus(404);
-        // return next();
+        const error = new Error(data.error, {
+            cause : {
+                statusCode : data.statusCode,
+                message : data.message
+            }
+        });
+        res.locals.err = error;
+        return next(error); 
     }
     // Data updates every 30 min so need to create a new Image every 30 mins
     const current_date = new Date();
@@ -182,8 +187,14 @@ dynamicWeatherOGImageController = async (req, res, next) => {
             });
         }
     }catch(e){
-        return res.sendStatus(500);
-        // return next();
+        const error = new Error("Unknown error", {
+            cause : {
+                statusCode : e.statusCode,
+                message : e.message
+            }
+        });
+        res.locals.err = error;
+        return next(error);
     }
 
     const img = await generateImage(path.join(__dirname, "..", "..", "views", "v1", "partials", "city_card.ejs"), {
@@ -192,7 +203,14 @@ dynamicWeatherOGImageController = async (req, res, next) => {
     }, ss_path);
 
     if(img === null){
-        return res.sendStatus(500);
+        const error = new Error("OG image not generated", {
+            cause : {
+                statusCode : data.statusCode,
+                message : data.message
+            }
+        });
+        res.locals.err = error;
+        return next(error);
     }
 
     res.writeHead(200, {

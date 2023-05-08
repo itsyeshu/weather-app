@@ -3,16 +3,17 @@ const aqiReducer = require(DEFAULT.REDUCER_DIR + "/air_quality");
 const searchReducer = require(DEFAULT.REDUCER_DIR + "/search");
 
 const aqiController = async (req, res) => {
-    // Fetches air quality index of a city
-    //
-    // @param city_name: Name of the city
-    // @param counter: Index of the city in the list of cities with the same name
-    // @param start_date: Start date of the air quality index
-    // @param end_date: End date of the air quality index
-    // @param timezone: Timezone of the air quality index
-    // @param lang: Language of the air quality index
-    //
-    // @return: Air quality index of the city
+    /* Fetches air quality index of a city
+     *
+     * @param city_name: Name of the city
+     * @param counter: Index of the city in the list of cities with the same name
+     * @param start_date: Start date of the air quality index
+     * @param end_date: End date of the air quality index
+     * @param timezone: Timezone of the air quality index
+     * @param lang: Language of the air quality index
+     *
+     * @return: Air quality index of the city
+     */
 
     const city_name = req.query.city;
     let counter = parseInt(req.query.counter || 1);
