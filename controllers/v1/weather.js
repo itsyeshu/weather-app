@@ -205,6 +205,7 @@ dynamicWeatherOGImageController = async (req, res, next) => {
             cause : {
                 statusCode : e.statusCode,
                 message : e.message
+                
             }
         });
         res.locals.err = error;
