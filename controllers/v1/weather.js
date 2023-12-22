@@ -1,14 +1,13 @@
 const DEFAULT = require("./constants");
 const weatherReducer = require(DEFAULT.REDUCER_DIR + "/weather");
 
-
 const path = require('path')
 const fsSync = require('fs');
 const fs = fsSync.promises;
 
 // Chrome and Puppeteer configuration
 const isDEV = process.env.NODE_ENV !== 'production';
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const ejs = require('ejs');
 
 const weatherController = async (req, res, next) => {
@@ -47,7 +46,7 @@ const weatherController = async (req, res, next) => {
 
         const weather_data = await weatherReducer.getCurrentWeatherDataByLatLon(lat, lon, timezone, lang);
         if(weather_data.error){
-            console.log("Error : ", weather_data.error);
+            // console.log("Error : ", weather_data.error);
             const error = new Error(weather_data.error, {
                 cause : {
                     statusCode : weather_data.statusCode,
@@ -92,34 +91,48 @@ const weatherController = async (req, res, next) => {
 
 // Dynmaic Weather OG Image helper function
 async function generateImage(template, template_data, ss_path) {
-    console.log("Loading OG:Image");
+    // console.log("Loading OG:Image");
 
-    console.log("Checking for File in cache : ", template_data.city.id +".jpg")
+    // console.log("Checking for File in cache : ", template_data.city.id +".jpg")
     if(fsSync.existsSync(ss_path)){
         image = Buffer.from(fsSync.readFileSync(ss_path));
-        console.log("Serving the image from cache");
+        // console.log("Serving the image from cache");
         return image;
     }
 
     const puppeteer_options = {
-        "args": ["--no-sandbox", "--disable-setuid-sandbox"],
-        "headless": "new"
+        headless: "new",
+        args: ['--no-sandbox', '--disable-setuid-sandbox'], // For Performance improvement only
     };
+    
+    // user-browser
+    if(isDEV && process.env.CHROMIUM_EXE_PATH){
+        puppeteer_options.executablePath = process.env.CHROMIUM_EXE_PATH;
+        puppeteer_options.ignoreDefaultArgs = ['--disable-extensions'];
+    }
+    // console.log("File not found in cache, creating a new one");
 
-    console.log("File not found in cache, creating a new one");
     // Render some HTML from the relevant template
+    // console.log("Rendering image content as HTML ...");
     const html = await ejs.renderFile(template, template_data);
-    // Launch a new browser
-    const browser = await puppeteer.launch(puppeteer_options);
-    console.log("HTML rendered & Browser launched")
-    // Create a new page
-    const page = await browser.newPage();
-    console.log("New tab launched")
-    console.log("Adding HTML content to the Tab")
-    // Set the content to our rendered HTML
-    await page.setContent(html, { "waitUntil": "networkidle0" });
-    console.log("Added HTML content to the Tab")
+    // console.log("DONE");
 
+    // Launch a new browser
+    // console.log("Launching browser ... ");
+    const browser = await puppeteer.launch(puppeteer_options);
+    // console.log("DONE");
+
+    // Create a new page
+    // console.log("Launching New tab ...");
+    const page = await browser.newPage();
+    // console.log("DONE");
+
+    // Set the content to our rendered HTML
+    // console.log("Adding HTML content to the Tab ...")
+    await page.setContent(html, { "waitUntil": "networkidle0" });
+    // console.log("DONE");
+
+    // console.log("Taking the screenshot ...");
     const screenshotBuffer = await page.screenshot({
     //  fullPage: false, // Default
         type: "jpeg",
@@ -132,10 +145,11 @@ async function generateImage(template, template_data, ss_path) {
         quality: 100,
         path : ss_path
     });
-    console.log("Took the screenshot")
+    // console.log("DONE");
 
+    // console.log("Closing browser ...");
     await browser.close();
-    console.log("Browser closed")
+    // console.log("DONE");
 
     return screenshotBuffer;
 }

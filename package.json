@@ -5,7 +5,8 @@
     "main": "app.js",
     "scripts": {
         "start": "node app.js",
-        "dev": "nodemon app.js"
+        "dev": "nodemon app.js",
+        "build": "webpack --config webpack.config.js"
     },
     "author": "its_yeshu",
     "license": "MIT",
@@ -20,6 +21,6 @@
         "express": "^4.18.2",
         "morgan": "^1.10.0",
         "node-uuid": "^1.4.8",
-        "puppeteer-core": "^9.1.1"
+        "puppeteer": "^21.6.1"
     }
 }
