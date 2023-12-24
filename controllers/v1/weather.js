@@ -173,9 +173,9 @@ dynamicWeatherOGImageController = async (req, res, next) => {
         res.locals.err = error;
         return next(error); 
     }
-    // Data updates every 30 min so need to create a new Image every 30 mins
+    // Data updates every 10 min so need to create a new Image every 10 mins
     const current_date = new Date();
-    current_date.setMinutes(parseInt(current_date.getMinutes() / 30) * 30);
+    current_date.setMinutes(parseInt(current_date.getMinutes() / 30) * 10);
     const _30_min_format = current_date.toISOString().split(":").join("-").substring(0, 16);
 
     // Current OG Image cache (Screenshot) Directory
